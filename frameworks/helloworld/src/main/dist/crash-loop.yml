@@ -1,0 +1,26 @@
+# This service generates endlessly crashing tasks which do NOT complete their Steps
+name: {{FRAMEWORK_NAME}}
+scheduler:
+  principal: {{FRAMEWORK_PRINCIPAL}}
+  user: {{FRAMEWORK_USER}}
+pods:
+  crash:
+    count: {{COUNT}}
+    placement: {{PLACEMENT}}
+    tasks:
+      server:
+        goal: RUNNING
+        cmd: echo {{SCENARIO}} && sleep {{SLEEP}} && exit 1
+        cpus: {{CPUS}}
+        memory: {{MEM}}
+        readiness-check:
+          cmd: exit 1
+          interval: 5
+          delay: 0
+          timeout: 10
+plans:
+  deploy:
+    phases:
+      crash:
+        strategy: parallel
+        pod: crash
