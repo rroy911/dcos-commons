@@ -102,9 +102,9 @@
             "tls",
             "uri",
             "web-url",
-            "crash-loop.yml",
-            "normal.yml",
-            "update-loop.yml",
+            "crash-loop",
+            "normal",
+            "update-loop",
             ""
           ],
           "default": "svc"
