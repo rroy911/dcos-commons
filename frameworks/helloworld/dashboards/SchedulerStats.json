@@ -172,10 +172,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(operation_launch_group)",
+          "expr": "operation_launch_group",
           "format": "time_series",
           "intervalFactor": 2,
-          "legendFormat": "",
+          "legendFormat": "{{dcos_service_name}}",
           "refId": "A"
         }
       ],
@@ -375,7 +375,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "",
+          "label": "offers/s",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -459,7 +459,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "",
+          "label": "offers/s",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -543,7 +543,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "",
+          "label": "offers/s",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -627,7 +627,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "",
+          "label": "offers/s",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -853,7 +853,7 @@
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{dcos_service_name}}",
           "metric": "",
           "refId": "A"
         }
@@ -938,7 +938,7 @@
           "expr": "revives_throttles",
           "format": "time_series",
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{dcos_service_name}}",
           "refId": "A"
         }
       ],
@@ -1105,7 +1105,7 @@
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "{{dcos_service_name}}",
+          "legendFormat": "{{instance}}",
           "metric": "",
           "refId": "A"
         }
@@ -1155,7 +1155,7 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -1187,5 +1187,5 @@
   "timezone": "browser",
   "title": "Scheduler Stats",
   "uid": "o_tHAhMiz",
-  "version": 2
+  "version": 4
 }
