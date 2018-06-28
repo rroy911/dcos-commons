@@ -255,7 +255,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(offers_received[1m]))",
+          "expr": "sum(offers_received)",
           "format": "time_series",
           "interval": "15s",
           "intervalFactor": 2,
@@ -263,7 +263,7 @@
           "refId": "C"
         },
         {
-          "expr": "sum(rate(offers_processed[1m]))",
+          "expr": "sum(offers_processed)",
           "format": "time_series",
           "interval": "15s",
           "intervalFactor": 2,

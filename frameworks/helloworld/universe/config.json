@@ -102,9 +102,7 @@
             "tls",
             "uri",
             "web-url",
-            "crash-loop",
-            "normal",
-            "update-loop",
+            "bench",
             ""
           ],
           "default": "svc"

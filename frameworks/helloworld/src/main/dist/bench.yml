@@ -1,0 +1,11 @@
+# This service generates endlessly crashing tasks which do NOT complete their Steps
+name: {{FRAMEWORK_NAME}}
+pods:
+  pod:
+    count: {{COUNT}}
+    tasks:
+      server:
+        goal: RUNNING
+        cmd: echo {{COUNT}} pods sleeping {{SLEEP}} && sleep {{SLEEP}}
+        cpus: {{CPUS}}
+        memory: {{MEM}}
