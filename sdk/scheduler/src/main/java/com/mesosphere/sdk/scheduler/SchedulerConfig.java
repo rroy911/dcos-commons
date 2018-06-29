@@ -197,8 +197,14 @@ public class SchedulerConfig {
 
     private final EnvStore envStore;
 
+
+    // TODO Delete this variable
+    public static double DEFAULT_EXECUTOR_CPUS = 0.1;
+
     private SchedulerConfig(EnvStore envStore) {
         this.envStore = envStore;
+
+        DEFAULT_EXECUTOR_CPUS = envStore.getOptionalDouble("DEFAULT_EXECUTOR_CPUS", DEFAULT_EXECUTOR_CPUS);
 
         if (!PRINTED_BUILD_INFO.getAndSet(true)) {
             LOGGER.info("Build information:\n- {}: {}, built {}\n- SDK: {}/{}, built {}",

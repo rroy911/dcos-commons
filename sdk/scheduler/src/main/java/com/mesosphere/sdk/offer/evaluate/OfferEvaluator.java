@@ -406,7 +406,7 @@ public class OfferEvaluator {
                 .preReservedRole(preReservedRole)
                 .role(role)
                 .principal(principal)
-                .value(scalar(Constants.DEFAULT_EXECUTOR_CPUS))
+                .value(scalar(SchedulerConfig.DEFAULT_EXECUTOR_CPUS))
                 .build());
 
         resources.add(DefaultResourceSpec.newBuilder()
