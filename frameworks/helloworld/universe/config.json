@@ -153,8 +153,8 @@
           "type": "integer",
           "default": 256
         },
-        "placement": {
-          "description": "Marathon-style placement constraint for filebeat pods",
+        "disable_suppress": {
+          "description": "If set, suppress would be disabled.",
           "type": "string",
           "default": ""
         }
