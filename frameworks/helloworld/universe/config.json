@@ -153,10 +153,20 @@
           "type": "integer",
           "default": 256
         },
+        "default_executor_cpus": {
+          "description": "Default executor CPU",
+          "type": "number",
+          "default": 0.1
+        },
         "disable_suppress": {
           "description": "If set, suppress would be disabled.",
           "type": "string",
           "default": ""
+        },
+        "strategy": {
+          "description": "One of serial or parallel",
+          "type": "string",
+          "default": "parallel"
         }
       },
       "required": [

@@ -59,7 +59,7 @@
       "fill": 0,
       "grid": {},
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 0,
         "y": 0
@@ -143,7 +143,7 @@
       "fill": 0,
       "grid": {},
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 12,
         "y": 0
@@ -227,9 +227,9 @@
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 9,
+        "w": 8,
         "x": 0,
-        "y": 7
+        "y": 8
       },
       "id": 22,
       "legend": {
@@ -320,8 +320,8 @@
       "gridPos": {
         "h": 7,
         "w": 8,
-        "x": 9,
-        "y": 7
+        "x": 8,
+        "y": 8
       },
       "id": 12,
       "legend": {
@@ -403,9 +403,174 @@
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 7,
-        "x": 17,
-        "y": 7
+        "w": 8,
+        "x": 16,
+        "y": 8
+      },
+      "id": 23,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(offers_processed[1m])",
+          "format": "time_series",
+          "interval": "15s",
+          "intervalFactor": 2,
+          "legendFormat": "{{dcos_service_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Processed Offers [1m](stacked)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "offers/s",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 15
+      },
+      "id": 26,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(suppressed[1m])",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Suppressed [1m]",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "editable": true,
+      "error": false,
+      "fill": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 15
       },
       "id": 21,
       "legend": {
@@ -487,93 +652,9 @@
       "grid": {},
       "gridPos": {
         "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 14
-      },
-      "id": 23,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 2,
-      "links": [],
-      "nullPointMode": "null as zero",
-      "percentage": false,
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "rate(offers_processed[1m])",
-          "format": "time_series",
-          "interval": "15s",
-          "intervalFactor": 2,
-          "legendFormat": "{{dcos_service_name}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Processed Offers [1m](stacked)",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "cumulative"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "offers/s",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ]
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "editable": true,
-      "error": false,
-      "fill": 0,
-      "grid": {},
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 14
+        "w": 8,
+        "x": 16,
+        "y": 15
       },
       "id": 24,
       "legend": {
@@ -654,10 +735,10 @@
       "fill": 0,
       "grid": {},
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 8,
         "x": 0,
-        "y": 21
+        "y": 22
       },
       "id": 2,
       "legend": {
@@ -736,10 +817,10 @@
       "fill": 1,
       "grid": {},
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 8,
         "x": 8,
-        "y": 21
+        "y": 22
       },
       "id": 7,
       "legend": {
@@ -820,10 +901,10 @@
       "fill": 0,
       "grid": {},
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 8,
         "x": 16,
-        "y": 21
+        "y": 22
       },
       "id": 1,
       "legend": {
@@ -849,7 +930,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "declines_long",
+          "expr": "rate(declines_long[1m])",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -905,10 +986,10 @@
       "fill": 0,
       "grid": {},
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 8,
         "x": 0,
-        "y": 30
+        "y": 29
       },
       "id": 13,
       "legend": {
@@ -935,7 +1016,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "revives_throttles",
+          "expr": "rate(revives_throttles[1m])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{dcos_service_name}}",
@@ -988,10 +1069,10 @@
       "fill": 1,
       "grid": {},
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 8,
         "x": 8,
-        "y": 30
+        "y": 29
       },
       "id": 14,
       "legend": {
@@ -1072,10 +1153,10 @@
       "fill": 0,
       "grid": {},
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 8,
         "x": 16,
-        "y": 30
+        "y": 29
       },
       "id": 15,
       "legend": {
@@ -1101,7 +1182,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(declines_long)",
+          "expr": "sum(rate(declines_long[1m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1155,7 +1236,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "2018-06-29T19:52:54.509Z",
     "to": "now"
   },
   "timepicker": {
