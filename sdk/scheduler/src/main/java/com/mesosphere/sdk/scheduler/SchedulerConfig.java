@@ -1,5 +1,6 @@
 package com.mesosphere.sdk.scheduler;
 
+import com.mesosphere.sdk.framework.OfferQueue;
 import com.mesosphere.sdk.offer.Constants;
 import com.mesosphere.sdk.state.GoalStateOverride;
 import org.apache.http.impl.client.LaxRedirectStrategy;
@@ -173,6 +174,12 @@ public class SchedulerConfig {
      * Environment variable for setting a custom TLD for the service (replaces Constants.TLD_NET).
      */
     private static final String USER_SPECIFIED_TLD_ENVVAR = "SERVICE_TLD";
+
+
+    /**
+     * Environment variable for setting the Offer Queue Size.
+     */
+    private static final String OFFER_QUEUE_SIZE = "OFFER_QUEUE_SIZE";
 
     /**
      * We print the build info here because this is likely to be a very early point in the service's execution. In a
@@ -425,5 +432,12 @@ public class SchedulerConfig {
      */
     public boolean isRegionAwarenessEnabled() {
         return envStore.getOptionalBoolean(ALLOW_REGION_AWARENESS_ENV, false);
+    }
+
+    /**
+     * Returns the offer queue size.
+     */
+    public Integer getOfferQueueSize() {
+        return envStore.getOptionalInt(OFFER_QUEUE_SIZE, 100);
     }
 }
