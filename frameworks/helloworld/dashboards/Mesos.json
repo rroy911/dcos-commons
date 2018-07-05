@@ -353,7 +353,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mesos_master_offers_pending",
+          "expr": "rate(mesos_master_offers_pending[1m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -486,7 +486,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "2018-06-29T21:14:00.000Z",
     "to": "now"
   },
   "timepicker": {
@@ -518,5 +518,5 @@
   "timezone": "browser",
   "title": "Mesos",
   "uid": "G6Wa7mDmk",
-  "version": 1
+  "version": 3
 }

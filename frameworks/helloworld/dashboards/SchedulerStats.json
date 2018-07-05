@@ -88,7 +88,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "operation_launch_group",
+          "expr": "rate(operation_launch_group[1m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -172,7 +172,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "operation_launch_group",
+          "expr": "rate(operation_launch_group[1m])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{dcos_service_name}}",
@@ -255,19 +255,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(offers_received)",
+          "expr": "sum(rate(offers_received[1m]))",
           "format": "time_series",
           "interval": "15s",
           "intervalFactor": 2,
-          "legendFormat": "offers_received",
+          "legendFormat": "",
           "refId": "C"
         },
         {
-          "expr": "sum(offers_processed)",
+          "expr": "sum(rate(offers_processed[1m]))",
           "format": "time_series",
           "interval": "15s",
           "intervalFactor": 2,
-          "legendFormat": "offers_processed",
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -481,7 +481,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
-      "fill": 1,
+      "fill": 0,
       "gridPos": {
         "h": 7,
         "w": 8,
@@ -499,7 +499,7 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
       "percentage": false,
@@ -512,18 +512,18 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(suppressed[1m])",
+          "expr": "count(suppresses)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "",
+          "legendFormat": "{{dcos_service_name}}",
           "refId": "A"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Suppressed [1m]",
+      "title": "Suppresses [1m]",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -846,7 +846,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "declines_short",
+          "expr": "rate(declines_short[1m])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{dcos_service_name}}",
@@ -1098,7 +1098,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(declines_short)",
+          "expr": "sum(rate(declines_short[1m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{instance}}",
@@ -1226,6 +1226,87 @@
           "show": true
         }
       ]
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "id": 28,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "com_mesosphere_sdk_framework_offerqueue_queue_size",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{dcos_service_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Offer Queue Size",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ]
     }
   ],
   "refresh": "5s",
@@ -1236,7 +1317,7 @@
     "list": []
   },
   "time": {
-    "from": "2018-06-29T19:52:54.509Z",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -1268,5 +1349,5 @@
   "timezone": "browser",
   "title": "Scheduler Stats",
   "uid": "o_tHAhMiz",
-  "version": 4
+  "version": 2
 }
