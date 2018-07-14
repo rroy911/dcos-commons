@@ -3,6 +3,7 @@ target/
 .cache/
 .gopath/
 .*/
+venv/
 
 # dcos-docker artifacts
 dcos-docker/
