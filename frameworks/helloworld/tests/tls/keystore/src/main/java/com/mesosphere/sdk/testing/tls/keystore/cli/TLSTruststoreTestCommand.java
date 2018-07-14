@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @param <T> the {@link Configuration} subclass which is loaded from the configuration file
  */
 public class TLSTruststoreTestCommand<T extends Configuration> extends EnvironmentCommand<T> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TLSTruststoreTestCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(TLSTruststoreTestCommand.class);
 
     private final Class<T> configurationClass;
 
@@ -74,11 +74,11 @@ public class TLSTruststoreTestCommand<T extends Configuration> extends Environme
             WebTarget target = client.target(namespace.getString("url"));
             Response response = target.request().buildGet().invoke();
 
-            LOGGER.info(String.valueOf(response));
+            logger.info(String.valueOf(response));
 
             assert response.getStatus() == 200;
         } catch (Exception e) {
-            LOGGER.error(String.valueOf(e));
+            logger.error(String.valueOf(e));
             throw e;
         }
     }

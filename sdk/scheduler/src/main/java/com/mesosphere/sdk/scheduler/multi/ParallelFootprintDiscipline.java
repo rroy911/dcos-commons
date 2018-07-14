@@ -22,7 +22,7 @@ import com.mesosphere.sdk.storage.PersisterException;
  */
 public class ParallelFootprintDiscipline implements OfferDiscipline {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ParallelFootprintDiscipline.class);
+    private static final Logger logger = LoggingUtils.getLogger(ParallelFootprintDiscipline.class);
 
     /**
      * A limit on the number of reserving services, or <=0 for no limit.
@@ -66,7 +66,7 @@ public class ParallelFootprintDiscipline implements OfferDiscipline {
             // Ensure stored set is mutable:
             selectedReservingServices = Optional.of(new HashSet<>(selectionStore.fetchSelectedServices()));
             if (!selectedReservingServices.get().isEmpty()) {
-                LOGGER.info("Recovered selected services for deployment: {}", selectedReservingServices.get());
+                logger.info("Recovered selected services for deployment: {}", selectedReservingServices.get());
             }
         }
 
@@ -75,7 +75,7 @@ public class ParallelFootprintDiscipline implements OfferDiscipline {
 
         // Store updated set (internally a no-op if nothing changes):
         if (selectionStore.storeSelectedServices(selectedReservingServices.get())) {
-            LOGGER.info("Selected services for deployment: {}", selectedReservingServices.get());
+            logger.info("Selected services for deployment: {}", selectedReservingServices.get());
         }
     }
 
@@ -109,7 +109,7 @@ public class ParallelFootprintDiscipline implements OfferDiscipline {
             } else {
                 // This service is in a reserving state, but limits are enabled and it is NOT selected.
                 // Avoid providing it with offers until it's been selected.
-                LOGGER.info("{} isn't selected for deployment: not sending offers ({}={})",
+                logger.info("{} isn't selected for deployment: not sending offers ({}={})",
                         serviceName, SchedulerConfig.RESERVE_DISCIPLINE_ENV, reservingMax);
                 return false;
             }

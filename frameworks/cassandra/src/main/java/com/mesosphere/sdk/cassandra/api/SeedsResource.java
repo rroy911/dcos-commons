@@ -18,7 +18,7 @@ import java.util.Set;
  */
 @Path("/v1/seeds")
 public class SeedsResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedsResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(SeedsResource.class);
 
     private final Set<String> configuredSeeds;
 
@@ -32,7 +32,7 @@ public class SeedsResource {
         try {
             return Response.ok(getSeeds(), MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            LOGGER.error("Failed to retrieve seeds: {}", e);
+            logger.error("Failed to retrieve seeds: {}", e);
             return Response.serverError().build();
         }
     }

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
  */
 public class DcosVersion {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(PlanGenerator.class);
+    private static final Logger logger = LoggingUtils.getLogger(PlanGenerator.class);
 
     /**
      * A broken-down representation of a version string's elements.
@@ -99,10 +99,10 @@ public class DcosVersion {
                 } else if (variantStr.equals(DcosVariant.ENTERPRISE.toString())) {
                     variant = DcosVariant.ENTERPRISE;
                 } else {
-                    LOGGER.error("Unexpected dcos-variant : {}", variantStr);
+                    logger.error("Unexpected dcos-variant : {}", variantStr);
                 }
             } else {
-                LOGGER.info("{} key not found in {}", VARIANT_KEY, jsonObject);
+                logger.info("{} key not found in {}", VARIANT_KEY, jsonObject);
             }
             return variant;
         }

@@ -24,7 +24,7 @@ import com.mesosphere.sdk.state.StateStore;
  * Utility class for sorting/grouping {@link TaskInfo}s and/or their associated {@link TaskStatus}es into pods.
  */
 public class GroupedTasks {
-    private static final Logger LOGGER = LoggingUtils.getLogger(GroupedTasks.class);
+    private static final Logger logger = LoggingUtils.getLogger(GroupedTasks.class);
 
     /**
      * Mapping of pod type => pod index => to tasks in that pod.
@@ -81,7 +81,7 @@ public class GroupedTasks {
 
                 tasks.add(taskInfoAndStatus);
             } catch (Exception e) {
-                LOGGER.warn(String.format("Failed to extract pod information from task %s", taskInfo.getName()), e);
+                logger.warn(String.format("Failed to extract pod information from task %s", taskInfo.getName()), e);
                 unknownPod.add(taskInfoAndStatus);
             }
         }

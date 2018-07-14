@@ -21,7 +21,7 @@ import com.mesosphere.sdk.storage.StorageError.Reason;
  */
 public class FrameworkStore {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(FrameworkStore.class);
+    private static final Logger logger = LoggingUtils.getLogger(FrameworkStore.class);
     private static final String FWK_ID_PATH_NAME = "FrameworkID";
 
     private final Persister persister;
@@ -60,7 +60,7 @@ public class FrameworkStore {
         } catch (PersisterException e) {
             if (e.getReason() == Reason.NOT_FOUND) {
                 // Clearing a non-existent FrameworkID should not result in an exception from us.
-                LOGGER.warn("Cleared unset FrameworkID, continuing silently", e);
+                logger.warn("Cleared unset FrameworkID, continuing silently", e);
             } else {
                 throw new StateStoreException(e);
             }
@@ -84,7 +84,7 @@ public class FrameworkStore {
             }
         } catch (PersisterException e) {
             if (e.getReason() == Reason.NOT_FOUND) {
-                LOGGER.warn("No FrameworkId found at: {}", FWK_ID_PATH_NAME);
+                logger.warn("No FrameworkId found at: {}", FWK_ID_PATH_NAME);
                 return Optional.empty();
             } else {
                 throw new StateStoreException(e);

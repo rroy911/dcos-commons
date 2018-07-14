@@ -22,7 +22,7 @@ import org.slf4j.Logger;
  */
 public class ConfigQueries {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ConfigQueries.class);
+    private static final Logger logger = LoggingUtils.getLogger(ConfigQueries.class);
 
     private ConfigQueries() {
         // Do not instantiate
@@ -37,7 +37,7 @@ public class ConfigQueries {
         try {
             return jsonOkResponse(new JSONArray(configStore.list()));
         } catch (Exception ex) {
-            LOGGER.error("Failed to fetch list of configuration ids", ex);
+            logger.error("Failed to fetch list of configuration ids", ex);
             return Response.serverError().build();
         }
     }
@@ -48,12 +48,12 @@ public class ConfigQueries {
      */
     public static <T extends Configuration> Response getConfiguration(
             ConfigStore<T> configStore, String configurationId) {
-        LOGGER.info("Attempting to fetch config with id '{}'", configurationId);
+        logger.info("Attempting to fetch config with id '{}'", configurationId);
         UUID uuid;
         try {
             uuid = UUID.fromString(configurationId);
         } catch (Exception ex) {
-            LOGGER.warn(String.format(
+            logger.warn(String.format(
                     "Failed to parse requested configuration id '%s' as a UUID", configurationId), ex);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -61,10 +61,10 @@ public class ConfigQueries {
             return fetchConfig(configStore, uuid);
         } catch (ConfigStoreException ex) {
             if (ex.getReason() == Reason.NOT_FOUND) {
-                LOGGER.warn(String.format("Requested configuration '%s' doesn't exist", configurationId), ex);
+                logger.warn(String.format("Requested configuration '%s' doesn't exist", configurationId), ex);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            LOGGER.error(String.format(
+            logger.error(String.format(
                     "Failed to fetch requested configuration with id '%s'", configurationId), ex);
             return Response.serverError().build();
         }
@@ -81,10 +81,10 @@ public class ConfigQueries {
             return jsonOkResponse(configArray);
         } catch (ConfigStoreException ex) {
             if (ex.getReason() == Reason.NOT_FOUND) {
-                LOGGER.warn("No target configuration exists", ex);
+                logger.warn("No target configuration exists", ex);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            LOGGER.error("Failed to fetch target configuration", ex);
+            logger.error("Failed to fetch target configuration", ex);
             return Response.serverError().build();
         }
     }
@@ -99,17 +99,17 @@ public class ConfigQueries {
             targetId = configStore.getTargetConfig();
         } catch (ConfigStoreException ex) {
             if (ex.getReason() == Reason.NOT_FOUND) {
-                LOGGER.warn("No target configuration exists", ex);
+                logger.warn("No target configuration exists", ex);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            LOGGER.error("Failed to fetch ID of target configuration", ex);
+            logger.error("Failed to fetch ID of target configuration", ex);
             return Response.serverError().build();
         }
         try {
             return fetchConfig(configStore, targetId);
         } catch (ConfigStoreException ex) {
             // Return 500 even if exception is NOT_FOUND: The data should be present.
-            LOGGER.error(String.format("Failed to fetch target configuration '%s'", targetId), ex);
+            logger.error(String.format("Failed to fetch target configuration '%s'", targetId), ex);
             return Response.serverError().build();
         }
     }

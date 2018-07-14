@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Path("/hello-world")
 @Produces(MediaType.APPLICATION_JSON)
 public class HelloWorldResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HelloWorldResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(HelloWorldResource.class);
 
     private final Template template;
     private final AtomicLong counter;
@@ -44,7 +44,7 @@ public class HelloWorldResource {
 
     @POST
     public void receiveHello(@Valid Saying saying) {
-        LOGGER.info("Received a saying: {}", saying);
+        logger.info("Received a saying: {}", saying);
     }
 
     @GET
@@ -53,10 +53,10 @@ public class HelloWorldResource {
     public String receiveDate(@QueryParam("date") Optional<DateTimeParam> dateTimeParam) {
         if (dateTimeParam.isPresent()) {
             final DateTimeParam actualDateTimeParam = dateTimeParam.get();
-            LOGGER.info("Received a date: {}", actualDateTimeParam);
+            logger.info("Received a date: {}", actualDateTimeParam);
             return actualDateTimeParam.get().toString();
         } else {
-            LOGGER.warn("No received date");
+            logger.warn("No received date");
             return null;
         }
     }

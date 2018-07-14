@@ -27,7 +27,7 @@ import com.mesosphere.sdk.specification.yaml.RawServiceSpec;
  * Main entry point for the Scheduler.
  */
 public class Main {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static final String KAFKA_ZK_URI_ENV = "KAFKA_ZOOKEEPER_URI";
 
     public static void main(String[] args) throws Exception {
@@ -51,7 +51,7 @@ public class Main {
                     FrameworkConfig.fromRawServiceSpec(rawServiceSpec).getZookeeperHostPort()
                     + CuratorUtils.getServiceRootPath(rawServiceSpec.getName());
         }
-        LOGGER.info("Running Kafka with zookeeper path: {}", kafkaZookeeperUri);
+        logger.info("Running Kafka with zookeeper path: {}", kafkaZookeeperUri);
 
         SchedulerBuilder schedulerBuilder = DefaultScheduler.newBuilder(
                 DefaultServiceSpec

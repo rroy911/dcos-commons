@@ -51,7 +51,7 @@ import com.mesosphere.sdk.storage.PersisterException;
 @Path("/v1/multi")
 public class ExampleMultiServiceResource {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ExampleMultiServiceResource.class);
+    private static final Logger logger = LoggingUtils.getLogger(ExampleMultiServiceResource.class);
 
     private static final String YAML_DIR = "hello-world-scheduler/";
     private static final String YAML_EXT = ".yml";
@@ -188,7 +188,7 @@ public class ExampleMultiServiceResource {
                     service.put("yaml", ContextData.deserialize(context.get()).yamlName);
                 }
             } catch (PersisterException e) {
-                LOGGER.error(String.format("Failed to get yaml filename for service %s", serviceName), e);
+                logger.error(String.format("Failed to get yaml filename for service %s", serviceName), e);
             }
 
             // Detect uninstall-in-progress by class type
@@ -227,7 +227,7 @@ public class ExampleMultiServiceResource {
         try {
             service = serviceStore.put(new ContextData(serviceName, yamlName, envOverride).serialize());
         } catch (Exception e) {
-            LOGGER.error("Failed to generate or persist service", e);
+            logger.error("Failed to generate or persist service", e);
             return ResponseUtils.plainResponse(
                     String.format("Failed to generate or persist service: %s", e.getMessage()),
                     Response.Status.BAD_REQUEST);
@@ -241,7 +241,7 @@ public class ExampleMultiServiceResource {
             return ResponseUtils.jsonOkResponse(obj);
         } catch (Exception e) {
             // This should never happen.
-            LOGGER.error("JSON error when encoding response for adding or updating service", e);
+            logger.error("JSON error when encoding response for adding or updating service", e);
             return Response.serverError().build();
         }
     }

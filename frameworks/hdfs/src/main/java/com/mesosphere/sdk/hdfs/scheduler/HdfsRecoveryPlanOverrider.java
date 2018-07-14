@@ -17,7 +17,7 @@ import java.util.*;
  * when appropriate.
  */
 public class HdfsRecoveryPlanOverrider implements RecoveryPlanOverrider {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String PHASE_NAME_TEMPLATE = "permanent-%s-failure-recovery";
     private static final String NN_PHASE_NAME = "name";
     private static final String JN_PHASE_NAME = "journal";

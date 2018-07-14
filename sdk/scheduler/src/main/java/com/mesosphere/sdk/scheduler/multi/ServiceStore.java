@@ -23,7 +23,7 @@ import com.mesosphere.sdk.storage.StorageError.Reason;
  */
 public class ServiceStore {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ServiceStore.class);
+    private static final Logger logger = LoggingUtils.getLogger(ServiceStore.class);
     private static final String ROOT_PATH_NAME = "ServiceList";
 
     /**
@@ -90,11 +90,11 @@ public class ServiceStore {
 
         Collection<AbstractScheduler> recovered = new ArrayList<>();
         for (String child : children) {
-            LOGGER.info("Recovering prior service: {}", child);
+            logger.info("Recovering prior service: {}", child);
             try {
                 recovered.add(serviceFactory.buildService(persister.get(getRawServiceContextPath(child))));
             } catch (Exception e) {
-                LOGGER.error(String.format(
+                logger.error(String.format(
                         "Unable to reconstruct service %s during recovery, continuing without this service", child), e);
                 continue;
             }
@@ -129,7 +129,7 @@ public class ServiceStore {
         }
         persister.set(getSanitizedServiceContextPath(serviceName), context);
 
-        LOGGER.info("Added service: {}", serviceName);
+        logger.info("Added service: {}", serviceName);
         return service;
     }
 
@@ -142,11 +142,11 @@ public class ServiceStore {
         return new MultiServiceEventClient.UninstallCallback() {
             @Override
             public void uninstalled(String name) {
-                LOGGER.info("Service has completed uninstall, removing from ServiceStore: {}", name);
+                logger.info("Service has completed uninstall, removing from ServiceStore: {}", name);
                 try {
                     remove(name);
                 } catch (PersisterException e) {
-                    LOGGER.error(String.format("Failed to clean up uninstalled service %s", name), e);
+                    logger.error(String.format("Failed to clean up uninstalled service %s", name), e);
                 }
             }
         };
@@ -161,10 +161,10 @@ public class ServiceStore {
     private void remove(String serviceName) throws PersisterException {
         try {
             persister.recursiveDelete(getSanitizedServiceBasePath(serviceName));
-            LOGGER.info("Removed service: {}", serviceName);
+            logger.info("Removed service: {}", serviceName);
         } catch (PersisterException e) {
             if (e.getReason() == Reason.NOT_FOUND) {
-                LOGGER.info("No service found, skipping removal: {}", serviceName);
+                logger.info("No service found, skipping removal: {}", serviceName);
                 // no-op
             } else {
                 throw e;

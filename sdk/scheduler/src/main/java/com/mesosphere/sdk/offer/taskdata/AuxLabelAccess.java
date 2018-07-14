@@ -26,7 +26,7 @@ import com.mesosphere.sdk.specification.NamedVIPSpec;
  */
 public class AuxLabelAccess {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(AuxLabelAccess.class);
+    private static final Logger logger = LoggingUtils.getLogger(AuxLabelAccess.class);
 
     private AuxLabelAccess() {
         // do not instantiate
@@ -147,7 +147,7 @@ public class AuxLabelAccess {
         // Expected VIP label format: "<vipname>:<port>"
         List<String> namePort = Splitter.on(':').splitToList(label.getValue());
         if (namePort.size() != 2) {
-            LOGGER.error("Task {}'s VIP value for {} is invalid, expected 2 components but got {}: {}",
+            logger.error("Task {}'s VIP value for {} is invalid, expected 2 components but got {}: {}",
                     taskName, label.getKey(), namePort.size(), label.getValue());
             return Optional.empty();
         }
@@ -155,7 +155,7 @@ public class AuxLabelAccess {
         try {
             vipPort = Integer.parseInt(namePort.get(1));
         } catch (NumberFormatException e) {
-            LOGGER.error(String.format(
+            logger.error(String.format(
                     "Unable to Task %s's VIP port from %s as an int",
                     taskName, label.getValue()), e);
             return Optional.empty();

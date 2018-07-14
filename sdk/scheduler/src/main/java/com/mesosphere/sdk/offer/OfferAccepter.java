@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Operations.
  */
 public class OfferAccepter {
-    private static final Logger LOGGER = LoggingUtils.getLogger(OfferAccepter.class);
+    private static final Logger logger = LoggingUtils.getLogger(OfferAccepter.class);
     /**
      * Tell Mesos to consider unused resources as refused for 1 second.
      */
@@ -71,7 +71,7 @@ public class OfferAccepter {
 
     private static void logOperations(
             String agentId, Collection<Protos.OfferID> offerIds, List<Protos.Offer.Operation> operations) {
-        LOGGER.info("Accepting {} offer{} for agent {} with {} operation{}: {}",
+        logger.info("Accepting {} offer{} for agent {} with {} operation{}: {}",
                 offerIds.size(),
                 offerIds.size() == 1 ? "" : "s",
                 agentId,
@@ -79,7 +79,7 @@ public class OfferAccepter {
                 operations.size() == 1 ? "" : "s",
                 offerIds.stream().map(Protos.OfferID::getValue).collect(Collectors.toSet()));
         for (Protos.Offer.Operation op : operations) {
-            LOGGER.info("  {}", TextFormat.shortDebugString(op));
+            logger.info("  {}", TextFormat.shortDebugString(op));
         }
     }
 }

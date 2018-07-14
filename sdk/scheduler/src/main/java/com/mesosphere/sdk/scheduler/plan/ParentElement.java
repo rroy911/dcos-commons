@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @param <C> the type of the child elements
  */
 public interface ParentElement<C extends Element> extends Element, Interruptible {
-    static final Logger LOGGER = LoggingUtils.getLogger(ParentElement.class);
+    Logger logger = LoggingUtils.getLogger(ParentElement.class);
 
     /**
      * Gets the children of this Element.
@@ -56,7 +56,7 @@ public interface ParentElement<C extends Element> extends Element, Interruptible
     @Override
     default void update(Protos.TaskStatus taskStatus) {
         Collection<? extends Element> children = getChildren();
-        LOGGER.debug("Updated {} with TaskStatus: {}", getName(), TextFormat.shortDebugString(taskStatus));
+        logger.debug("Updated {} with TaskStatus: {}", getName(), TextFormat.shortDebugString(taskStatus));
         children.forEach(element -> element.update(taskStatus));
     }
 
@@ -64,7 +64,7 @@ public interface ParentElement<C extends Element> extends Element, Interruptible
     @Override
     default void restart() {
         Collection<? extends Element> children = getChildren();
-        LOGGER.info("Restarting elements within {}: {}", getName(), children);
+        logger.info("Restarting elements within {}: {}", getName(), children);
         children.forEach(element -> element.restart());
     }
 
@@ -72,7 +72,7 @@ public interface ParentElement<C extends Element> extends Element, Interruptible
     @Override
     default void forceComplete() {
         Collection<? extends Element> children = getChildren();
-        LOGGER.info("Forcing completion of elements within {}: {}", getName(), children);
+        logger.info("Forcing completion of elements within {}: {}", getName(), children);
         children.forEach(element -> element.forceComplete());
     }
 

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 
 public class OfferProcessorTest {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(OfferProcessorTest.class);
+    private static final Logger logger = LoggingUtils.getLogger(OfferProcessorTest.class);
     private static final int THREAD_COUNT = 50;
     private static final int OFFERS_PER_THREAD = 3;
 
@@ -209,7 +209,7 @@ public class OfferProcessorTest {
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    LOGGER.info("Thread {} sending {} offers: {}",
+                    logger.info("Thread {} sending {} offers: {}",
                             threadName,
                             offers.size(),
                             offers.stream().map(o -> o.getId().getValue()).collect(Collectors.toList()));
@@ -220,13 +220,13 @@ public class OfferProcessorTest {
             t.start();
         }
 
-        LOGGER.info("Created {} threads.", threadCount);
+        logger.info("Created {} threads.", threadCount);
 
         // Wait for input to finish:
         for (Thread t : threads) {
-            LOGGER.info("Waiting on thread {}...", t.getName());
+            logger.info("Waiting on thread {}...", t.getName());
             t.join();
-            LOGGER.info("Thread {} has exited", t.getName());
+            logger.info("Thread {} has exited", t.getName());
         }
 
         processor.awaitOffersProcessed();

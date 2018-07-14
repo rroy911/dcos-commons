@@ -27,7 +27,7 @@ import com.mesosphere.sdk.scheduler.SchedulerConfig;
  */
 class ReviveManager {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ReviveManager.class);
+    private static final Logger logger = LoggingUtils.getLogger(ReviveManager.class);
 
     // Rate limiter for revive calls.
     private final TokenBucket reviveTokenBucket;
@@ -83,7 +83,7 @@ class ReviveManager {
 
         // Service doesn't need offers, and offers are not suppressed. Suppress.
         if (suppressEnabled) {
-            LOGGER.info("Suppressing offers");
+            logger.info("Suppressing offers");
             Optional<SchedulerDriver> driver = Driver.getDriver();
             if (!driver.isPresent()) {
                 throw new IllegalStateException("INTERNAL ERROR: No driver present for suppressing offers");
@@ -91,7 +91,7 @@ class ReviveManager {
             driver.get().suppressOffers();
             Metrics.incrementSuppresses();
         } else {
-            LOGGER.info("Refraining from suppressing offers (disabled via DISABLE_SUPPRESS)");
+            logger.info("Refraining from suppressing offers (disabled via DISABLE_SUPPRESS)");
         }
 
         isSuppressed = true;
@@ -130,12 +130,12 @@ class ReviveManager {
         }
 
         if (!reviveTokenBucket.tryAcquire()) {
-            LOGGER.info("Revive attempt has been throttled");
+            logger.info("Revive attempt has been throttled");
             Metrics.incrementReviveThrottles();
             return;
         }
 
-        LOGGER.info("Reviving offers");
+        logger.info("Reviving offers");
         Optional<SchedulerDriver> driver = Driver.getDriver();
         if (!driver.isPresent()) {
             throw new IllegalStateException("INTERNAL ERROR: No driver present for reviving offers.");

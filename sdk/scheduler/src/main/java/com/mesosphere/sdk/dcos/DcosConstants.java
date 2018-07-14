@@ -13,7 +13,7 @@ import com.mesosphere.sdk.offer.LoggingUtils;
  */
 public class DcosConstants {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(DcosConstants.class);
+    private static final Logger logger = LoggingUtils.getLogger(DcosConstants.class);
 
     private static final String MESOS_MASTER = "master.mesos";
     private static final String MESOS_LEADER = "leader.mesos";
@@ -57,7 +57,7 @@ public class DcosConstants {
 
     public static void warnIfUnsupportedNetwork(String networkName) {
         if (!SUPPORTED_OVERLAY_NETWORKS.contains(networkName)) {
-            LOGGER.warn(
+            logger.warn(
                     "Virtual network '{}' is not supported, unexpected behavior may result (expected one of: {})",
                     networkName, SUPPORTED_OVERLAY_NETWORKS);
         }

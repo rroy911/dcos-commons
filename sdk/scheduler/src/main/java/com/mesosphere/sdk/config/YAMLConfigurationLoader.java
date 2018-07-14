@@ -19,11 +19,11 @@ import java.nio.file.Paths;
  * override pre-configured configuration values.
  */
 public class YAMLConfigurationLoader {
-    public static final Logger LOGGER = LoggingUtils.getLogger(YAMLConfigurationLoader.class);
+    private static final Logger logger = LoggingUtils.getLogger(YAMLConfigurationLoader.class);
 
     public static <T> T loadConfigFromEnv(Class<T> configurationClass, final String path)
         throws IOException {
-        LOGGER.info("Parsing configuration file from {} ", path);
+        logger.info("Parsing configuration file from {} ", path);
         logProcessEnv();
         final Path configPath = Paths.get(path);
         final File file = configPath.toAbsolutePath().toFile();
@@ -41,9 +41,8 @@ public class YAMLConfigurationLoader {
         return mapper.readValue(conf, configurationClass);
     }
 
-    public static void logProcessEnv() {
-        LOGGER.info("Process environment:");
-        System.getenv().entrySet().forEach(entry ->
-                LOGGER.info("{} = {}", entry.getKey(), entry.getValue()));
+    private static void logProcessEnv() {
+        logger.info("Process environment:");
+        System.getenv().forEach((key, value) -> logger.info("{} = {}", key, value));
     }
 }

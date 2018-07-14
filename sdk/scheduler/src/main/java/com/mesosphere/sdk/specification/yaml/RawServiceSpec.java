@@ -24,7 +24,7 @@ import org.slf4j.Logger;
  * Root of the parsed YAML object model.
  */
 public class RawServiceSpec {
-    private static final Logger LOGGER = LoggingUtils.getLogger(RawServiceSpec.class);
+    private static final Logger logger = LoggingUtils.getLogger(RawServiceSpec.class);
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
     static {
         // If the user provides duplicate fields (e.g. 'count' twice), throw an error instead of silently dropping data:
@@ -83,7 +83,7 @@ public class RawServiceSpec {
                     FileUtils.readFileToString(pathToYamlTemplate, StandardCharsets.UTF_8),
                     env,
                     missingValues);
-            LOGGER.info("Rendered ServiceSpec from {}:\nMissing template values: {}\n{}",
+            logger.info("Rendered ServiceSpec from {}:\nMissing template values: {}\n{}",
                     pathToYamlTemplate.getAbsolutePath(), missingValues, yamlWithEnv);
 
             if (this.isRenderingStrict) {

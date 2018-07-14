@@ -36,7 +36,7 @@ import org.slf4j.Logger;
  */
 public class EndpointsQueries {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(EndpointsQueries.class);
+    private static final Logger logger = LoggingUtils.getLogger(EndpointsQueries.class);
     private static final String RESPONSE_KEY_DNS = "dns";
     private static final String RESPONSE_KEY_ADDRESS = "address";
     private static final String RESPONSE_KEY_VIP = "vip";
@@ -59,7 +59,7 @@ public class EndpointsQueries {
             endpoints.addAll(getDiscoveryEndpoints(stateStore, frameworkName, schedulerConfig).keySet());
             return jsonOkResponse(new JSONArray(endpoints));
         } catch (Exception ex) {
-            LOGGER.error("Failed to fetch list of endpoints", ex);
+            logger.error("Failed to fetch list of endpoints", ex);
             return Response.serverError().build();
         }
     }
@@ -91,7 +91,7 @@ public class EndpointsQueries {
 
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception ex) {
-            LOGGER.error(String.format("Failed to fetch endpoint %s", endpointName), ex);
+            logger.error(String.format("Failed to fetch endpoint %s", endpointName), ex);
             return Response.serverError().build();
         }
     }
@@ -106,7 +106,7 @@ public class EndpointsQueries {
         Map<String, JSONObject> endpointsByName = new TreeMap<>();
         for (TaskInfo taskInfo : stateStore.fetchTasks()) {
             if (!taskInfo.hasDiscovery()) {
-                LOGGER.debug("Task lacks any discovery information, no endpoints to report: {}",
+                logger.debug("Task lacks any discovery information, no endpoints to report: {}",
                         taskInfo.getName());
                 continue;
             }
@@ -122,7 +122,7 @@ public class EndpointsQueries {
             List<String> ipAddresses = reconcileIpAddresses(stateStore, taskInfo.getName());
             for (Port port : discoveryInfo.getPorts().getPortsList()) {
                 if (port.getVisibility() != Constants.DISPLAYED_PORT_VISIBILITY) {
-                    LOGGER.debug(
+                    logger.debug(
                             "Port {} in task {} has {} visibility. {} is needed to be listed in endpoints.",
                             port.getName(), taskInfo.getName(), port.getVisibility(),
                             Constants.DISPLAYED_PORT_VISIBILITY);
@@ -202,7 +202,7 @@ public class EndpointsQueries {
         if (StringUtils.isEmpty(taskInfoPort.getName())) {
             // Older tasks may omit the port name in their DiscoveryInfo. In practice this shouldn't happen because
             // tasks that old should have been long updated/relaunched by the time this is invoked, but just in case...
-            LOGGER.warn("Missing port name. Old task?: {}", TextFormat.shortDebugString(taskInfoPort));
+            logger.warn("Missing port name. Old task?: {}", TextFormat.shortDebugString(taskInfoPort));
             return;
         }
 

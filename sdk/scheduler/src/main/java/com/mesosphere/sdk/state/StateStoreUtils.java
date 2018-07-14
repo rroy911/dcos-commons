@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public class StateStoreUtils {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(StateStoreUtils.class);
+    private static final Logger logger = LoggingUtils.getLogger(StateStoreUtils.class);
 
     private static final String UNINSTALLING_PROPERTY_KEY = "uninstalling";
     private static final String LAST_COMPLETED_UPDATE_TYPE_KEY = "last-completed-update-type";
@@ -94,7 +94,7 @@ public class StateStoreUtils {
             boolean isPermanentlyFailed = markedFailed && taskSpec.get().getGoal() == GoalState.RUNNING;
 
             if (TaskUtils.needsRecovery(taskSpec.get(), status) || isPermanentlyFailed) {
-                LOGGER.info("{} needs recovery with state: {}, goal state: {}, marked permanently failed: {}",
+                logger.info("{} needs recovery with state: {}, goal state: {}, marked permanently failed: {}",
                         info.getName(), status.getState(), taskSpec.get().getGoal().name(), isPermanentlyFailed);
                 results.add(info);
             }
@@ -135,7 +135,7 @@ public class StateStoreUtils {
         for (Protos.TaskInfo taskInfo : stateStore.fetchTasks()) {
             if (taskInfo.getTaskId().getValue().equals(taskStatus.getTaskId().getValue())) {
                 if (taskInfoOptional.isPresent()) {
-                    LOGGER.error("Found duplicate TaskIDs in Task{} and Task {}",
+                    logger.error("Found duplicate TaskIDs in Task{} and Task {}",
                             taskInfoOptional.get(), taskInfo.getName());
                     throw new StateStoreException(Reason.LOGIC_ERROR, String.format(
                             "There are more than one tasks with TaskID: %s", taskStatus));
@@ -178,7 +178,7 @@ public class StateStoreUtils {
             if (statusOptional.isPresent()) {
                 Protos.TaskStatus status = statusOptional.get();
                 if (!status.getTaskId().equals(task.getTaskId())) {
-                    LOGGER.warn(
+                    logger.warn(
                             "Found StateStore status inconsistency for task {}: task.taskId={}, taskStatus.taskId={}",
                             task.getName(), task.getTaskId(), status.getTaskId());
                     repairedTasks.add(task.toBuilder().setTaskId(status.getTaskId()).build());
@@ -186,7 +186,7 @@ public class StateStoreUtils {
                             task.getName(), status.toBuilder().setState(Protos.TaskState.TASK_FAILED).build());
                 }
             } else {
-                LOGGER.warn(
+                logger.warn(
                         "Found StateStore status inconsistency for task {}: task.taskId={}, no status",
                         task.getName(), task.getTaskId());
                 Protos.TaskStatus status = Protos.TaskStatus.newBuilder()
@@ -231,7 +231,7 @@ public class StateStoreUtils {
             try {
                 return new JsonSerializer().deserialize(bytes, Boolean.class);
             } catch (IOException e) {
-                LOGGER.error(String.format("Error converting property '%s' to boolean.", propertyName), e);
+                logger.error(String.format("Error converting property '%s' to boolean.", propertyName), e);
                 throw new StateStoreException(Reason.SERIALIZATION_ERROR, e);
             }
         }
@@ -261,7 +261,7 @@ public class StateStoreUtils {
             // Broadly catch exceptions to handle:
             // Invalid TaskStatuses
             // StateStoreExceptions
-            LOGGER.error("Unable to decode TaskStatus for taskName=" + taskName, e);
+            logger.error("Unable to decode TaskStatus for taskName=" + taskName, e);
             return Optional.empty();
         }
     }

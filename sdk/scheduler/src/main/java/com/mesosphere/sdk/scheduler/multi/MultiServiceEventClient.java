@@ -52,7 +52,7 @@ public class MultiServiceEventClient implements MesosEventClient {
         void uninstalled(String serviceName);
     }
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(MultiServiceEventClient.class);
+    private static final Logger logger = LoggingUtils.getLogger(MultiServiceEventClient.class);
 
     private final String frameworkName;
     private final SchedulerConfig schedulerConfig;
@@ -165,7 +165,7 @@ public class MultiServiceEventClient implements MesosEventClient {
                         .map(s -> s.getServiceSpec().getName())
                         .collect(Collectors.toSet()));
             } catch (Exception e) {
-                LOGGER.error("Failed to update selected services in offer discipline, continuing anyway", e);
+                logger.error("Failed to update selected services in offer discipline, continuing anyway", e);
                 // The offer discipline failed to flush state to ZK. Its in-memory state should be fine though, so just
                 // continue as-is for now.
             }
@@ -180,7 +180,7 @@ public class MultiServiceEventClient implements MesosEventClient {
                 ClientStatusResponse statusResponse = service.getClientStatus();
                 if (!statusResponse.equals(ClientStatusResponse.idle())) {
                     // Only log status when it's active
-                    LOGGER.info("{} status: {}", serviceName, statusResponse);
+                    logger.info("{} status: {}", serviceName, statusResponse);
                 }
 
                 // Update the offer discipline with the status response we got, and use it's response to decide whether
@@ -234,14 +234,14 @@ public class MultiServiceEventClient implements MesosEventClient {
         }
 
         if (!servicesToUninstall.isEmpty()) {
-            LOGGER.info("Starting uninstall for {} service{}: {}",
+            logger.info("Starting uninstall for {} service{}: {}",
                     servicesToUninstall.size(), servicesToUninstall.size() == 1 ? "" : "s", servicesToUninstall);
             // Trigger uninstalls. Grabs a lock internally, so we need to be unlocked when calling it here.
             multiServiceManager.uninstallServices(servicesToUninstall);
         }
 
         if (!servicesToRemove.isEmpty()) {
-            LOGGER.info("Removing {} uninstalled service{}: {}",
+            logger.info("Removing {} uninstalled service{}: {}",
                     servicesToRemove.size(), servicesToRemove.size() == 1 ? "" : "s", servicesToRemove);
 
             // Note: It's possible that we can have a race where we attempt to remove a service twice. This is fine.
@@ -274,7 +274,7 @@ public class MultiServiceEventClient implements MesosEventClient {
             return OfferResponse.processed(Collections.emptyList());
         }
 
-        LOGGER.info("Sending {} offer{} to {} service{}:",
+        logger.info("Sending {} offer{} to {} service{}:",
                 offers.size(), offers.size() == 1 ? "" : "s",
                 serviceNamesToGiveOffers.size(), serviceNamesToGiveOffers.size() == 1 ? "" : "s");
 
@@ -290,7 +290,7 @@ public class MultiServiceEventClient implements MesosEventClient {
             Optional<AbstractScheduler> service = multiServiceManager.getService(serviceName);
             if (!service.isPresent()) {
                 // In practice this shouldn't happen, unless perhaps the developer removed the service directly.
-                LOGGER.warn("Service '{}' was scheduled to receive offers, then later removed: continuing without it",
+                logger.warn("Service '{}' was scheduled to receive offers, then later removed: continuing without it",
                         serviceName);
                 continue;
             }
@@ -303,7 +303,7 @@ public class MultiServiceEventClient implements MesosEventClient {
             boolean readyForOffers = offerResponse.result == OfferResponse.Result.PROCESSED;
             if (!offerResponse.recommendations.isEmpty() || !readyForOffers) {
                 // Only log result when it's non-empty/unusual
-                LOGGER.info("{} offer result: {}[{} recommendation{}], {} offer{} remaining",
+                logger.info("{} offer result: {}[{} recommendation{}], {} offer{} remaining",
                         serviceName,
                         offerResponse.result,
                         offerResponse.recommendations.size(),
@@ -357,7 +357,7 @@ public class MultiServiceEventClient implements MesosEventClient {
                 } else if (ResourceUtils.getReservation(resource).isPresent()) {
                     // This reserved resource is malformed. Reservations created by this scheduler should always have a
                     // service name label. Make some noise but leave it alone. Out of caution, we DO NOT destroy it.
-                    LOGGER.error("Ignoring malformed resource in offer {} (missing namespace label): {}",
+                    logger.error("Ignoring malformed resource in offer {} (missing namespace label): {}",
                             offer.getId().getValue(), TextFormat.shortDebugString(resource));
                 } else {
                     // Not a reserved resource. Ignore for cleanup purposes.
@@ -365,14 +365,14 @@ public class MultiServiceEventClient implements MesosEventClient {
             }
         }
         if (!offersByService.isEmpty()) {
-            LOGGER.info("Sorted reserved resources from {} offer{} into {} services: {}",
+            logger.info("Sorted reserved resources from {} offer{} into {} services: {}",
                     unusedOffers.size(),
                     unusedOffers.size() == 1 ? "" : "s",
                     offersByService.size(),
                     offersByService.keySet());
         }
         if (!unexpectedResources.isEmpty()) {
-            LOGGER.warn("Encountered {} malformed resources to clean up: {}",
+            logger.warn("Encountered {} malformed resources to clean up: {}",
                     unexpectedResources.size(), unexpectedResources.values());
         }
 
@@ -386,7 +386,7 @@ public class MultiServiceEventClient implements MesosEventClient {
             Optional<AbstractScheduler> service = multiServiceManager.getService(serviceName);
             if (!service.isPresent()) {
                 // (CASE 1) Old or invalid service name. Consider all resources for this service as unexpected.
-                LOGGER.info("  {} cleanup result: unknown service, all resources unexpected", serviceName);
+                logger.info("  {} cleanup result: unknown service, all resources unexpected", serviceName);
                 for (OfferResources serviceOffer : serviceOffers) {
                     getEntry(unexpectedResources, serviceOffer.getOffer()).addAll(serviceOffer.getResources());
                 }
@@ -404,7 +404,7 @@ public class MultiServiceEventClient implements MesosEventClient {
                 // Add those to unexpectedResources.
                 // Note: We're careful to only invoke this once per service, as the call is likely to be expensive.
                 UnexpectedResourcesResponse response = service.get().getUnexpectedResources(offersToSend);
-                LOGGER.info("  {} cleanup result: {} with {} unexpected resources in {} offer{}",
+                logger.info("  {} cleanup result: {} with {} unexpected resources in {} offer{}",
                         serviceName,
                         response.result,
                         response.offerResources.stream()
@@ -449,11 +449,11 @@ public class MultiServiceEventClient implements MesosEventClient {
         Optional<AbstractScheduler> service = multiServiceManager.getMatchingService(status);
         if (!service.isPresent()) {
             // Unrecognized service. Status for old task?
-            LOGGER.info("Received status for unknown task {}: {}",
+            logger.info("Received status for unknown task {}: {}",
                     status.getTaskId().getValue(), TextFormat.shortDebugString(status));
             return TaskStatusResponse.unknownTask();
         }
-        LOGGER.info("Received status for task {}: {}", status.getTaskId().getValue(), status.getState());
+        logger.info("Received status for task {}: {}", status.getTaskId().getValue(), status.getState());
         return service.get().taskStatus(status);
     }
 

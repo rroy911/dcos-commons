@@ -25,7 +25,7 @@ import static com.mesosphere.sdk.offer.Constants.PORTS_RESOURCE_TYPE;
  */
 public class TaskUtils {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(TaskUtils.class);
+    private static final Logger logger = LoggingUtils.getLogger(TaskUtils.class);
 
     private TaskUtils() {
         // do not instantiate
@@ -67,7 +67,7 @@ public class TaskUtils {
      * @return A list of the appropriate task names.
      */
     public static List<String> getTaskNames(PodInstance podInstance, Collection<String> tasksToLaunch) {
-        LOGGER.debug("PodInstance tasks: {}", TaskUtils.getTaskNames(podInstance));
+        logger.debug("PodInstance tasks: {}", TaskUtils.getTaskNames(podInstance));
         return podInstance.getPod().getTasks().stream()
                 .filter(taskSpec -> tasksToLaunch.contains(taskSpec.getName()))
                 .map(taskSpec -> TaskSpec.getInstanceName(podInstance, taskSpec))
@@ -108,7 +108,7 @@ public class TaskUtils {
             return reader.getIndex() == podInstance.getIndex()
                     && reader.getType().equals(podInstance.getPod().getType());
         } catch (TaskException e) {
-            LOGGER.warn("Unable to extract pod type or index from TaskInfo", e);
+            logger.warn("Unable to extract pod type or index from TaskInfo", e);
             return false;
         }
     }
@@ -127,7 +127,7 @@ public class TaskUtils {
         String oldTaskName = oldTaskSpec.getName();
         String newTaskName = newTaskSpec.getName();
         if (!Objects.equals(oldTaskName, newTaskName)) {
-            LOGGER.debug("Task names '{}' and '{}' are different.", oldTaskName, newTaskName);
+            logger.debug("Task names '{}' and '{}' are different.", oldTaskName, newTaskName);
             return true;
         }
 
@@ -136,7 +136,7 @@ public class TaskUtils {
         GoalState oldGoalState = oldTaskSpec.getGoal();
         GoalState newGoalState = newTaskSpec.getGoal();
         if (!Objects.equals(oldGoalState, newGoalState)) {
-            LOGGER.debug("Task goals '{}' and '{}' are different.", oldGoalState, newGoalState);
+            logger.debug("Task goals '{}' and '{}' are different.", oldGoalState, newGoalState);
             return true;
         }
 
@@ -148,20 +148,20 @@ public class TaskUtils {
                 getResourceSpecMap(newTaskSpec.getResourceSet().getResources());
 
         if (oldResourceMap.size() != newResourceMap.size()) {
-            LOGGER.debug("Resource lengths are different for old resources: '{}' and new resources: '{}'",
+            logger.debug("Resource lengths are different for old resources: '{}' and new resources: '{}'",
                     oldResourceMap, newResourceMap);
             return true;
         }
 
         for (Map.Entry<String, ResourceSpec> newEntry : newResourceMap.entrySet()) {
             String resourceName = newEntry.getKey();
-            LOGGER.debug("Checking resource difference for: {}", resourceName);
+            logger.debug("Checking resource difference for: {}", resourceName);
             ResourceSpec oldResourceSpec = oldResourceMap.get(resourceName);
             if (oldResourceSpec == null) {
-                LOGGER.debug("Resource not found: {}", resourceName);
+                logger.debug("Resource not found: {}", resourceName);
                 return true;
             } else if (!EqualsBuilder.reflectionEquals(oldResourceSpec, newEntry.getValue())) {
-                LOGGER.debug("Resources are different.");
+                logger.debug("Resources are different.");
                 return true;
             }
         }
@@ -169,7 +169,7 @@ public class TaskUtils {
         // Volumes (custom comparison)
 
         if (!volumesEqual(oldTaskSpec, newTaskSpec)) {
-            LOGGER.debug("Task volumes '{}' and '{}' are different.",
+            logger.debug("Task volumes '{}' and '{}' are different.",
                     oldTaskSpec.getResourceSet().getVolumes(),
                     newTaskSpec.getResourceSet().getVolumes());
             return true;
@@ -180,7 +180,7 @@ public class TaskUtils {
         Optional<CommandSpec> oldCommand = oldTaskSpec.getCommand();
         Optional<CommandSpec> newCommand = newTaskSpec.getCommand();
         if (!Objects.equals(oldCommand, newCommand)) {
-            LOGGER.debug("Task commands '{}' and '{}' are different.", oldCommand, newCommand);
+            logger.debug("Task commands '{}' and '{}' are different.", oldCommand, newCommand);
             return true;
         }
 
@@ -189,7 +189,7 @@ public class TaskUtils {
         Optional<HealthCheckSpec> oldHealthCheck = oldTaskSpec.getHealthCheck();
         Optional<HealthCheckSpec> newHealthCheck = newTaskSpec.getHealthCheck();
         if (!Objects.equals(oldHealthCheck, newHealthCheck)) {
-            LOGGER.debug("Task healthchecks '{}' and '{}' are different.", oldHealthCheck, newHealthCheck);
+            logger.debug("Task healthchecks '{}' and '{}' are different.", oldHealthCheck, newHealthCheck);
             return true;
         }
 
@@ -198,7 +198,7 @@ public class TaskUtils {
         Optional<ReadinessCheckSpec> oldReadinessCheck = oldTaskSpec.getReadinessCheck();
         Optional<ReadinessCheckSpec> newReadinessCheck = newTaskSpec.getReadinessCheck();
         if (!Objects.equals(oldReadinessCheck, newReadinessCheck)) {
-            LOGGER.debug("Task readinesschecks '{}' and '{}' are different.", oldReadinessCheck, newReadinessCheck);
+            logger.debug("Task readinesschecks '{}' and '{}' are different.", oldReadinessCheck, newReadinessCheck);
             return true;
         }
 
@@ -207,7 +207,7 @@ public class TaskUtils {
         Map<String, ConfigFileSpec> oldConfigMap = getConfigTemplateMap(oldTaskSpec.getConfigFiles());
         Map<String, ConfigFileSpec> newConfigMap = getConfigTemplateMap(newTaskSpec.getConfigFiles());
         if (!Objects.equals(oldConfigMap, newConfigMap)) {
-            LOGGER.debug("Config templates '{}' and '{}' are different.", oldConfigMap, newConfigMap);
+            logger.debug("Config templates '{}' and '{}' are different.", oldConfigMap, newConfigMap);
             return true;
         }
 
@@ -216,14 +216,14 @@ public class TaskUtils {
         Optional<DiscoverySpec> oldDiscoverySpec = oldTaskSpec.getDiscovery();
         Optional<DiscoverySpec> newDiscoverySpec = newTaskSpec.getDiscovery();
         if (!Objects.equals(oldDiscoverySpec, newDiscoverySpec)) {
-            LOGGER.debug("DiscoverySpecs '{}' and '{}' are different.", oldDiscoverySpec, newDiscoverySpec);
+            logger.debug("DiscoverySpecs '{}' and '{}' are different.", oldDiscoverySpec, newDiscoverySpec);
             return true;
         }
 
         int oldTaskKillGracePeriodSeconds = oldTaskSpec.getTaskKillGracePeriodSeconds();
         int newTaskKillGracePeriodSeconds = newTaskSpec.getTaskKillGracePeriodSeconds();
         if (oldTaskKillGracePeriodSeconds != newTaskKillGracePeriodSeconds) {
-            LOGGER.debug("TaskKillGracePeriodSeconds '{}' and '{}' are different.",
+            logger.debug("TaskKillGracePeriodSeconds '{}' and '{}' are different.",
                     oldTaskKillGracePeriodSeconds, newTaskKillGracePeriodSeconds);
             return true;
         }
@@ -355,7 +355,7 @@ public class TaskUtils {
                 PodInstance podInstance = getPodInstance(configStore, taskInfo);
                 Optional<TaskSpec> taskSpec = getTaskSpec(podInstance, taskInfo.getName());
                 if (!taskSpec.isPresent()) {
-                    LOGGER.error("No TaskSpec found for failed task: {}", taskInfo.getName());
+                    logger.error("No TaskSpec found for failed task: {}", taskInfo.getName());
                     continue;
                 }
                 Collection<TaskSpec> failedTaskSpecs = podsToFailedTasks.get(podInstance);
@@ -365,7 +365,7 @@ public class TaskUtils {
                 }
                 failedTaskSpecs.add(taskSpec.get());
             } catch (TaskException e) {
-                LOGGER.error(String.format("Failed to get pod instance for task: %s", taskInfo.getName()), e);
+                logger.error(String.format("Failed to get pod instance for task: %s", taskInfo.getName()), e);
             }
         }
         if (podsToFailedTasks.isEmpty()) {
@@ -378,7 +378,7 @@ public class TaskUtils {
             List<String> taskNames = entry.getValue().stream()
                     .map(taskSpec -> taskSpec.getName())
                     .collect(Collectors.toList());
-            LOGGER.info("Failed pod: {} with tasks: {}", entry.getKey().getName(), taskNames);
+            logger.info("Failed pod: {} with tasks: {}", entry.getKey().getName(), taskNames);
         }
 
         Set<String> allLaunchedTaskNames = stateStore.fetchTasks().stream()
@@ -409,11 +409,11 @@ public class TaskUtils {
                     .collect(Collectors.toList());
 
             if (taskSpecsToLaunch.isEmpty()) {
-                LOGGER.info("No tasks to recover for pod: {}", entry.getKey().getName());
+                logger.info("No tasks to recover for pod: {}", entry.getKey().getName());
                 continue;
             }
 
-            LOGGER.info("Tasks to relaunch in pod {}: {}", entry.getKey().getName(), taskSpecsToLaunch.stream()
+            logger.info("Tasks to relaunch in pod {}: {}", entry.getKey().getName(), taskSpecsToLaunch.stream()
                     .map(taskSpec -> String.format(
                             "%s=%s", taskSpec.getName(), taskSpec.isEssential() ? "essential" : "nonessential"))
                     .collect(Collectors.toList()));

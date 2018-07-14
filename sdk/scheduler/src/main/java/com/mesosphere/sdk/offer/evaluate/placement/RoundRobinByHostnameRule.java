@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public class RoundRobinByHostnameRule extends AbstractRoundRobinRule {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(RoundRobinByHostnameRule.class);
+    private static final Logger logger = LoggingUtils.getLogger(RoundRobinByHostnameRule.class);
 
     public RoundRobinByHostnameRule(Optional<Integer> agentCount) {
         this(agentCount, null);
@@ -70,7 +70,7 @@ public class RoundRobinByHostnameRule extends AbstractRoundRobinRule {
         try {
             return new TaskLabelReader(task).getHostname();
         } catch (TaskException e) {
-            LOGGER.warn("Unable to extract hostname from task for filtering", e);
+            logger.warn("Unable to extract hostname from task for filtering", e);
             return null;
         }
     }

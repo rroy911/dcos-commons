@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 public class DefaultServiceSpec implements ServiceSpec {
     private static final Comparator COMPARATOR = new Comparator();
-    private static final Logger LOGGER = LoggingUtils.getLogger(DefaultServiceSpec.class);
+    private static final Logger logger = LoggingUtils.getLogger(DefaultServiceSpec.class);
 
     @NotNull(message = "Service name cannot be empty")
     @Size(min = 1, message = "Service name cannot be empty")
@@ -316,8 +316,8 @@ public class DefaultServiceSpec implements ServiceSpec {
             // Serialize and then deserialize:
             loopbackSpecification = factory.parse(serviceSpecBytes);
         } catch (Exception e) {
-            LOGGER.error("Failed to parse JSON for loopback validation", e);
-            LOGGER.error("JSON to be parsed was:\n{}", new String(serviceSpecBytes, StandardCharsets.UTF_8));
+            logger.error("Failed to parse JSON for loopback validation", e);
+            logger.error("JSON to be parsed was:\n{}", new String(serviceSpecBytes, StandardCharsets.UTF_8));
             throw new IllegalArgumentException("Failed to parse JSON for loopback validation", e);
         }
         // Verify that equality works:
@@ -478,7 +478,7 @@ public class DefaultServiceSpec implements ServiceSpec {
                 } else if (value.equals("RUNNING")) {
                     return GoalState.RUNNING;
                 } else {
-                    LOGGER.warn("Found unknown goal state in config store: {}", value);
+                    logger.warn("Found unknown goal state in config store: {}", value);
                     return GoalState.UNKNOWN;
                 }
             }

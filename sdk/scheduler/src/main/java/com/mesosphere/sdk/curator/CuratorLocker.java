@@ -17,7 +17,7 @@ import com.mesosphere.sdk.storage.PersisterUtils;
  * same service.
  */
 public class CuratorLocker {
-    private static final Logger LOGGER = LoggingUtils.getLogger(CuratorUtils.class);
+    private static final Logger logger = LoggingUtils.getLogger(CuratorUtils.class);
 
     private static final int LOCK_ATTEMPTS = 3;
     static final String LOCK_PATH_NAME = "lock";
@@ -27,7 +27,7 @@ public class CuratorLocker {
     private static CuratorLocker instance = null;
     private static final Thread SHUTDOWN_HOOK = new Thread(() -> {
         if (instance != null) {
-            LOGGER.info("Shutdown initiated, releasing curator lock");
+            logger.info("Shutdown initiated, releasing curator lock");
             instance.unlockInternal();
         }
     });
@@ -105,7 +105,7 @@ public class CuratorLocker {
         final String lockPath = PersisterUtils.join(CuratorUtils.getServiceRootPath(serviceName), LOCK_PATH_NAME);
         InterProcessSemaphoreMutex curatorMutex = new InterProcessSemaphoreMutex(curatorClient, lockPath);
 
-        LOGGER.info("Acquiring ZK lock on {}...", lockPath);
+        logger.info("Acquiring ZK lock on {}...", lockPath);
         final String failureLogMsg = String.format("Failed to acquire ZK lock on %s. " +
                 "Duplicate service named '%s', or recently restarted instance of '%s'?",
                 lockPath, serviceName, serviceName);
@@ -113,17 +113,17 @@ public class CuratorLocker {
             // Start at 1 for pretty display of "1/3" through "3/3":
             for (int attempt = 1; attempt < LOCK_ATTEMPTS + 1; ++attempt) {
                 if (curatorMutex.acquire(10, getWaitTimeUnit())) {
-                    LOGGER.info("{}/{} Lock acquired.", attempt, LOCK_ATTEMPTS);
+                    logger.info("{}/{} Lock acquired.", attempt, LOCK_ATTEMPTS);
                     this.curatorMutex = curatorMutex;
                     return;
                 }
                 if (attempt < LOCK_ATTEMPTS) {
-                    LOGGER.error("{}/{} {} Retrying lock...", attempt, LOCK_ATTEMPTS, failureLogMsg);
+                    logger.error("{}/{} {} Retrying lock...", attempt, LOCK_ATTEMPTS, failureLogMsg);
                 }
             }
-            LOGGER.error(failureLogMsg + " Restarting scheduler process to try again.");
+            logger.error(failureLogMsg + " Restarting scheduler process to try again.");
         } catch (Exception ex) {
-            LOGGER.error(String.format("Error acquiring ZK lock on path: %s", lockPath), ex);
+            logger.error(String.format("Error acquiring ZK lock on path: %s", lockPath), ex);
         }
         curatorClient = null;
         exit();
@@ -140,7 +140,7 @@ public class CuratorLocker {
         try {
             curatorMutex.release();
         } catch (Exception ex) {
-            LOGGER.error("Error releasing ZK lock.", ex);
+            logger.error("Error releasing ZK lock.", ex);
         }
         curatorClient.close();
         curatorMutex = null;

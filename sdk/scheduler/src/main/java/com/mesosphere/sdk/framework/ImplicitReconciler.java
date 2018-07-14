@@ -27,7 +27,7 @@ import com.mesosphere.sdk.scheduler.SchedulerConfig;
  */
 class ImplicitReconciler {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ImplicitReconciler.class);
+    private static final Logger logger = LoggingUtils.getLogger(ImplicitReconciler.class);
 
     private static final Runnable RECONCILE_CMD = new Runnable() {
         @Override
@@ -35,13 +35,13 @@ class ImplicitReconciler {
             try {
                 Optional<SchedulerDriver> driver = Driver.getDriver();
                 if (driver.isPresent()) {
-                    LOGGER.info("Triggering implicit reconciliation");
+                    logger.info("Triggering implicit reconciliation");
                     driver.get().reconcileTasks(Collections.emptyList());
                 } else {
-                    LOGGER.error("Unable to trigger implicit reconciliation: No SchedulerDriver");
+                    logger.error("Unable to trigger implicit reconciliation: No SchedulerDriver");
                 }
             } catch (Exception e) {
-                LOGGER.error("Failed to trigger implicit reconciliation", e);
+                logger.error("Failed to trigger implicit reconciliation", e);
             }
         }
     };

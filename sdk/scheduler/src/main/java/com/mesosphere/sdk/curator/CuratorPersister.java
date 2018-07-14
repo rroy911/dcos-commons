@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class CuratorPersister implements Persister {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(CuratorPersister.class);
+    private static final Logger logger = LoggingUtils.getLogger(CuratorPersister.class);
 
     /**
      * Number of times to attempt an atomic write transaction in storeMany().
@@ -223,7 +223,7 @@ public class CuratorPersister implements Persister {
              * The best we can do is to wipe everything under the root node. A proposed way to "fix" things
              * lives at https://jira.mesosphere.com/browse/INFINITY-1470.
              */
-            LOGGER.debug("Deleting children of root {}", path);
+            logger.debug("Deleting children of root {}", path);
             try {
                 CuratorTransactionFinal transaction = client.inTransaction().check().forPath(serviceRootPath).and();
                 Set<String> pendingDeletePaths = new HashSet<>();
@@ -245,7 +245,7 @@ public class CuratorPersister implements Persister {
             set(unprefixedPath, null);
         } else {
             // Normal case: Delete node itself and any/all children.
-            LOGGER.debug("Deleting {} (and any children)", path);
+            logger.debug("Deleting {} (and any children)", path);
             try {
                 client.delete().deletingChildrenIfNeeded().forPath(path);
             } catch (KeeperException.NoNodeException e) {
@@ -260,7 +260,7 @@ public class CuratorPersister implements Persister {
     @Override
     public void set(String unprefixedPath, byte[] bytes) throws PersisterException {
         final String path = withFrameworkPrefix(unprefixedPath);
-        LOGGER.debug("Setting {} => {}", path, getInfo(bytes));
+        logger.debug("Setting {} => {}", path, getInfo(bytes));
         try {
             try {
                 client.create().creatingParentsIfNeeded().forPath(path, bytes);
@@ -283,7 +283,7 @@ public class CuratorPersister implements Persister {
         for (Map.Entry<String, byte[]> entry : unprefixedPathBytesMap.entrySet()) {
             pathBytesMap.put(withFrameworkPrefix(entry.getKey()), entry.getValue());
         }
-        LOGGER.debug("Updating {} entries: {}", pathBytesMap.size(), pathBytesMap.keySet());
+        logger.debug("Updating {} entries: {}", pathBytesMap.size(), pathBytesMap.keySet());
         runTransactionWithRetries(new SetTransactionFactory(pathBytesMap));
     }
 
@@ -295,7 +295,7 @@ public class CuratorPersister implements Persister {
         Collection<String> paths = unprefixedPaths.stream()
                 .map(unprefixedPath -> withFrameworkPrefix(unprefixedPath))
                 .collect(Collectors.toList());
-        LOGGER.debug("Deleting {} entries: {}", paths.size(), paths);
+        logger.debug("Deleting {} entries: {}", paths.size(), paths);
         runTransactionWithRetries(new ClearTransactionFactory(paths));
     }
 
@@ -312,7 +312,7 @@ public class CuratorPersister implements Persister {
                     } catch (Exception e) {
                         // Transaction failed! Bad connection? Existence check rendered invalid?
                         // Swallow exception and try again
-                        LOGGER.error(String.format("Failed to complete transaction attempt %d/%d: %s",
+                        logger.error(String.format("Failed to complete transaction attempt %d/%d: %s",
                                 i + 1, ATOMIC_WRITE_ATTEMPTS, transaction), e);
                     }
                 } else {
@@ -330,7 +330,7 @@ public class CuratorPersister implements Persister {
         if (unprefixedPaths.isEmpty()) {
             return Collections.emptyMap();
         }
-        LOGGER.debug("Getting {} entries: {}", unprefixedPaths.size(), unprefixedPaths);
+        logger.debug("Getting {} entries: {}", unprefixedPaths.size(), unprefixedPaths);
 
         Map<String, byte[]> result = new TreeMap<>();
         // Unlike with writes, there is not an atomic read operation. Therefore we wing it with a series of plain reads.

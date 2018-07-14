@@ -44,7 +44,7 @@ import com.mesosphere.sdk.storage.PersisterUtils;
  */
 class OfferProcessor {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(OfferProcessor.class);
+    private static final Logger logger = LoggingUtils.getLogger(OfferProcessor.class);
     private static final Duration DEFAULT_OFFER_WAIT = Duration.ofSeconds(5);
 
     // Avoid attempting to process offers until initialization has completed via the first call to registered().
@@ -125,7 +125,7 @@ class OfferProcessor {
                     try {
                         processQueuedOffers(DEFAULT_OFFER_WAIT);
                     } catch (Throwable e) {
-                        LOGGER.error("Error encountered when processing offers, exiting to avoid zombie state", e);
+                        logger.error("Error encountered when processing offers, exiting to avoid zombie state", e);
                         ProcessExit.exit(ProcessExit.ERROR, e);
                     }
                 }
@@ -142,7 +142,7 @@ class OfferProcessor {
                             .map(offer -> offer.getId())
                             .collect(Collectors.toList()));
 
-            LOGGER.info("Enqueuing {} offer{}. Updated offers in progress: {}",
+            logger.info("Enqueuing {} offer{}. Updated offers in progress: {}",
                     offers.size(),
                     offers.size() == 1 ? "" : "s",
                     offersInProgress.stream()
@@ -153,7 +153,7 @@ class OfferProcessor {
         for (Protos.Offer offer : offers) {
             boolean queued = offerQueue.offer(offer);
             if (!queued) {
-                LOGGER.warn("Offer queue is full: Declining offer and removing from in progress: '{}'",
+                logger.warn("Offer queue is full: Declining offer and removing from in progress: '{}'",
                         offer.getId().getValue());
                 declineShort(Arrays.asList(offer));
                 // Remove AFTER decline: Avoid race where we haven't declined yet but appear to be done
@@ -188,10 +188,10 @@ class OfferProcessor {
         for (int i = 0; i < totalDurationMs / sleepDurationMs; ++i) {
             synchronized (inProgressLock) {
                 if (offersInProgress.isEmpty()) {
-                    LOGGER.info("All offers processed.");
+                    logger.info("All offers processed.");
                     return;
                 }
-                LOGGER.warn("Offers in progress {} is non-empty, sleeping for {}ms ...",
+                logger.warn("Offers in progress {} is non-empty, sleeping for {}ms ...",
                         offersInProgress.stream().map(id -> id.getValue()).collect(Collectors.toList()),
                         sleepDurationMs);
             }
@@ -206,11 +206,11 @@ class OfferProcessor {
      * {@code queueWait} for offers to appear.
      */
     private void processQueuedOffers(Duration queueWait) {
-        LOGGER.info("Waiting up to {}s for offers...", queueWait.getSeconds());
+        logger.info("Waiting up to {}s for offers...", queueWait.getSeconds());
         List<Protos.Offer> offers = offerQueue.takeAll(queueWait);
         try {
             if (!offers.isEmpty()) {
-                LOGGER.info("Received {} offers.", offers.size());
+                logger.info("Received {} offers.", offers.size());
                 // We've gotten some offers, so we're not suppressed anymore. NOTE: We explicitly avoid calling
                 // ReviveManager the offers are first queued because of the following potential for a deadlock:
                 // 1. We call SchedulerDriver.reviveOffers(), which blocks.
@@ -224,13 +224,13 @@ class OfferProcessor {
             if (offers.isEmpty() && !isInitialized.get()) {
                 // The scheduler hasn't finished registration yet, so many members haven't been initialized either.
                 // Avoid hitting NPE for planCoordinator, driver, etc.
-                LOGGER.info("Retrying wait for offers: Registration hasn't completed yet.");
+                logger.info("Retrying wait for offers: Registration hasn't completed yet.");
                 return;
             } else if (isDeregistered.get()) {
                 // The scheduler has deregistered following a completed uninstall, but there may yet be unflushed offers
                 // in the queue.
                 if (!offers.isEmpty()) {
-                    LOGGER.info("Dropping {} queued offers: Framework is deregistered", offers.size());
+                    logger.info("Dropping {} queued offers: Framework is deregistered", offers.size());
                 }
                 return;
             }
@@ -259,7 +259,7 @@ class OfferProcessor {
                                 .map(offer -> offer.getId())
                                 .collect(Collectors.toList()));
                 if (!offers.isEmpty()) {
-                    LOGGER.info("Processed {} queued offer{}. {} {} in progress: {}",
+                    logger.info("Processed {} queued offer{}. {} {} in progress: {}",
                             offers.size(),
                             offers.size() == 1 ? "" : "s",
                             offersInProgress.size(),
@@ -275,7 +275,7 @@ class OfferProcessor {
      */
     private boolean checkStatus() {
         ClientStatusResponse response = mesosEventClient.getClientStatus();
-        LOGGER.info("Status result: {}", response);
+        logger.info("Status result: {}", response);
 
         switch (response.result) {
         case WORKING:
@@ -306,7 +306,7 @@ class OfferProcessor {
             case START_UNINSTALL:
                 // We do not directly support this result at this level. It should only occur in multi-service
                 // deployments, where it would have been handled upstream in the MultiServiceEventClient.
-                LOGGER.error("Got unsupported {} from service", response.result);
+                logger.error("Got unsupported {} from service", response.result);
                 throw new IllegalStateException(String.format(
                         "Got unsupported %s response. This should have been handled by a MultiServiceEventClient",
                         response.result));
@@ -324,7 +324,7 @@ class OfferProcessor {
         // and clean or decline the remaining unused offers.
         OfferResponse offerResponse = mesosEventClient.offers(offers);
         if (!offers.isEmpty() || !offerResponse.recommendations.isEmpty()) {
-            LOGGER.info("Offer result for {} offer{}: {} with {} recommendation{}",
+            logger.info("Offer result for {} offer{}: {} with {} recommendation{}",
                     offers.size(), offers.size() == 1 ? "" : "s",
                     offerResponse.result,
                     offerResponse.recommendations.size(), offerResponse.recommendations.size() == 1 ? "" : "s");
@@ -353,7 +353,7 @@ class OfferProcessor {
                     mesosEventClient.getUnexpectedResources(unusedOffers);
             cleanupResult = unexpectedResourcesResponse.result;
             cleanupRecommendations = toCleanupRecommendations(unexpectedResourcesResponse.offerResources);
-            LOGGER.info("Cleanup result for {} offer{}: {} with {} recommendation{}",
+            logger.info("Cleanup result for {} offer{}: {} with {} recommendation{}",
                     unusedOffers.size(), unusedOffers.size() == 1 ? "" : "s",
                     unexpectedResourcesResponse.result,
                     cleanupRecommendations.size(), cleanupRecommendations.size() == 1 ? "" : "s");
@@ -388,14 +388,14 @@ class OfferProcessor {
     private void destroyFramework() {
         // Wipe all data from ZK. This includes the framework ID, which is used to detect across restarts that the
         // framework has been destroyed.
-        LOGGER.info("Deleting all persisted data...");
+        logger.info("Deleting all persisted data...");
         try {
             PersisterUtils.clearAllData(persister);
         } catch (PersisterException e) {
             throw new IllegalStateException("Failed to delete all persister data", e);
         }
 
-        LOGGER.info("Tearing down framework...");
+        logger.info("Tearing down framework...");
         Optional<SchedulerDriver> driver = Driver.getDriver();
         if (driver.isPresent()) {
             // Stop the SchedulerDriver thread:
@@ -403,11 +403,11 @@ class OfferProcessor {
             // - This call will cause FrameworkRunner's SchedulerDriver.run() call to return DRIVER_STOPPED.
             driver.get().stop(false);
         } else {
-            LOGGER.error("No driver is present for deregistering the framework.");
+            logger.error("No driver is present for deregistering the framework.");
         }
 
-        LOGGER.info("### UNINSTALL IS COMPLETE! ###");
-        LOGGER.info("Scheduler should be cleaned up shortly...");
+        logger.info("### UNINSTALL IS COMPLETE! ###");
+        logger.info("Scheduler should be cleaned up shortly...");
 
         // Notify the client that deregistration has completed, following them giving us an UNINSTALLED response.
         // They can then set their "deploy" plan to Complete, which will in turn let Cosmos know that this scheduler
@@ -477,7 +477,7 @@ class OfferProcessor {
         Collection<Protos.OfferID> offerIds = unusedOffers.stream()
                 .map(offer -> offer.getId())
                 .collect(Collectors.toList());
-        LOGGER.info("Declining {} unused offer{} for {} seconds: {}",
+        logger.info("Declining {} unused offer{} for {} seconds: {}",
                 offerIds.size(),
                 offerIds.size() == 1 ? "" : "s",
                 refuseSeconds,

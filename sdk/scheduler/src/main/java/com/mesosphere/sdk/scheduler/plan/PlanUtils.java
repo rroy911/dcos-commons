@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class PlanUtils {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(PlanUtils.class);
+    private static final Logger logger = LoggingUtils.getLogger(PlanUtils.class);
 
     private PlanUtils() {
         // do not instantiate
@@ -102,50 +102,50 @@ public class PlanUtils {
 
         if (!errors.isEmpty() || anyMatch(Status.ERROR, childStatuses)) {
             result = Status.ERROR;
-            LOGGER.debug("({} status={}) One or more children contain errors.", parentName, result);
+            logger.debug("({} status={}) One or more children contain errors.", parentName, result);
         } else if (allMatch(Status.COMPLETE, childStatuses)) {
             result = Status.COMPLETE;
-            LOGGER.debug("({} status={}) All children have status: {}", parentName, result, Status.COMPLETE);
+            logger.debug("({} status={}) All children have status: {}", parentName, result, Status.COMPLETE);
         } else if (isInterrupted) {
             result = Status.WAITING;
-            LOGGER.debug("({} status={}) Parent element is interrupted", parentName, result);
+            logger.debug("({} status={}) Parent element is interrupted", parentName, result);
         } else if (anyMatch(Status.PREPARED, childStatuses)) {
             result = Status.IN_PROGRESS;
-            LOGGER.debug("({} status={}) At least one child has status: {}", parentName, result, Status.PREPARED);
+            logger.debug("({} status={}) At least one child has status: {}", parentName, result, Status.PREPARED);
         } else if (anyMatch(Status.WAITING, candidateStatuses)) {
             result = Status.WAITING;
-            LOGGER.debug("({} status={}) At least one candidate has status: {}", parentName, result, Status.WAITING);
+            logger.debug("({} status={}) At least one candidate has status: {}", parentName, result, Status.WAITING);
         } else if (anyMatch(Status.IN_PROGRESS, candidateStatuses)) {
             result = Status.IN_PROGRESS;
-            LOGGER.debug("({} status={}) At least one candidate has status: {}",
+            logger.debug("({} status={}) At least one candidate has status: {}",
                     parentName, result, Status.IN_PROGRESS);
         } else if (anyMatch(Status.COMPLETE, childStatuses) && anyMatch(Status.PENDING, candidateStatuses)) {
             result = Status.IN_PROGRESS;
-            LOGGER.debug("({} status={}) At least one child has status '{}' and at least one candidate has status '{}'",
+            logger.debug("({} status={}) At least one child has status '{}' and at least one candidate has status '{}'",
                     parentName, result, Status.COMPLETE, Status.PENDING);
         } else if (anyMatch(Status.COMPLETE, childStatuses) && anyMatch(Status.STARTING, candidateStatuses)) {
             result = Status.IN_PROGRESS;
-            LOGGER.debug("({} status={}) At least one child has status '{}' and at least one candidate has status '{}'",
+            logger.debug("({} status={}) At least one child has status '{}' and at least one candidate has status '{}'",
                     parentName, result, Status.COMPLETE, Status.STARTING);
         } else if (anyMatch(Status.COMPLETE, childStatuses) && anyMatch(Status.STARTED, candidateStatuses)) {
             result = Status.IN_PROGRESS;
-            LOGGER.debug("({} status={}) At least one child has status '{}' and at least one candidate has status '{}'",
+            logger.debug("({} status={}) At least one child has status '{}' and at least one candidate has status '{}'",
                     parentName, result, Status.COMPLETE, Status.STARTED);
         } else if (anyMatch(Status.PENDING, candidateStatuses)) {
             result = Status.PENDING;
-            LOGGER.debug("({} status={}) At least one candidate has status: {}", parentName, result, Status.PENDING);
+            logger.debug("({} status={}) At least one candidate has status: {}", parentName, result, Status.PENDING);
         } else if (anyMatch(Status.WAITING, childStatuses)) {
             result = Status.WAITING;
-            LOGGER.debug("({} status={}) At least one child has status: {}", parentName, result, Status.WAITING);
+            logger.debug("({} status={}) At least one child has status: {}", parentName, result, Status.WAITING);
         } else if (anyMatch(Status.STARTING, candidateStatuses)) {
             result = Status.STARTING;
-            LOGGER.debug("({} status={}) At least one candidate has status '{}'", parentName, result, Status.STARTING);
+            logger.debug("({} status={}) At least one candidate has status '{}'", parentName, result, Status.STARTING);
         } else if (anyMatch(Status.STARTED, candidateStatuses)) {
             result = Status.STARTED;
-            LOGGER.debug("({} status={}) At least one candidate has status '{}'", parentName, result, Status.STARTED);
+            logger.debug("({} status={}) At least one candidate has status '{}'", parentName, result, Status.STARTED);
         } else {
             result = Status.ERROR;
-            LOGGER.warn("({} status={}) Unexpected state. Children: {} Candidates: {}",
+            logger.warn("({} status={}) Unexpected state. Children: {} Candidates: {}",
                     parentName, result, childStatuses, candidateStatuses);
         }
 

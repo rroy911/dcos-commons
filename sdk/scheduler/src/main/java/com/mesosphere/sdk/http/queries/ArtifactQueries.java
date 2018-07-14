@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public class ArtifactQueries {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ArtifactQueries.class);
+    private static final Logger logger = LoggingUtils.getLogger(ArtifactQueries.class);
 
     /**
      * Generates template URLs suitable for use with fetching template URLs. Schedulers using {@link ArtifactResource}
@@ -61,13 +61,13 @@ public class ArtifactQueries {
             String podType,
             String taskName,
             String configurationName) {
-        LOGGER.info("Attempting to fetch template '{}' from config '{}' with pod '{}', task '{}'",
+        logger.info("Attempting to fetch template '{}' from config '{}' with pod '{}', task '{}'",
                 configurationName, configurationId, podType, taskName);
         UUID uuid;
         try {
             uuid = UUID.fromString(configurationId);
         } catch (IllegalArgumentException ex) {
-            LOGGER.warn(String.format(
+            logger.warn(String.format(
                     "Failed to parse requested configuration id as a UUID: '%s'", configurationId), ex);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -76,10 +76,10 @@ public class ArtifactQueries {
             serviceSpec = configStore.fetch(uuid);
         } catch (ConfigStoreException ex) {
             if (ex.getReason() == Reason.NOT_FOUND) {
-                LOGGER.warn(String.format("Requested configuration '%s' doesn't exist", configurationId), ex);
+                logger.warn(String.format("Requested configuration '%s' doesn't exist", configurationId), ex);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            LOGGER.error(String.format(
+            logger.error(String.format(
                     "Failed to fetch requested configuration with id '%s'", configurationId), ex);
             return Response.serverError().build();
         }
@@ -87,7 +87,7 @@ public class ArtifactQueries {
             ConfigFileSpec config = getConfigFile(getTask(getPod(serviceSpec, podType), taskName), configurationName);
             return plainOkResponse(config.getTemplateContent());
         } catch (Exception ex) {
-            LOGGER.warn(String.format(
+            logger.warn(String.format(
                     "Couldn't find requested template in config '%s'", configurationId), ex);
             return Response.status(Response.Status.NOT_FOUND).build();
         }

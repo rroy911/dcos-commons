@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SchedulerConfig {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(SchedulerConfig.class);
+    private static final Logger logger = LoggingUtils.getLogger(SchedulerConfig.class);
 
     /** Envvar to specify a custom amount of time to wait for the Scheduler API to come up during startup. */
     private static final String API_SERVER_TIMEOUT_S_ENV = "API_SERVER_TIMEOUT_S";
@@ -206,7 +206,7 @@ public class SchedulerConfig {
         this.envStore = envStore;
 
         if (!PRINTED_BUILD_INFO.getAndSet(true)) {
-            LOGGER.info("Build information:\n- {}: {}, built {}\n- SDK: {}/{}, built {}",
+            logger.info("Build information:\n- {}: {}, built {}\n- SDK: {}/{}, built {}",
                     getPackageName(),
                     getPackageVersion(),
                     Instant.ofEpochMilli(getPackageBuildTimeMs()),

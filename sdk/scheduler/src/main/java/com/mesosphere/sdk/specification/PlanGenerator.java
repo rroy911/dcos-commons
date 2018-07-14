@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Generates {@link Plan}s as defined in a YAML plan specification.
  */
 public class PlanGenerator {
-    private static final Logger LOGGER = LoggingUtils.getLogger(PlanGenerator.class);
+    private static final Logger logger = LoggingUtils.getLogger(PlanGenerator.class);
 
     private static final String DEFAULT_POD_INDEX_LABEL = "default";
 
@@ -186,7 +186,7 @@ public class PlanGenerator {
         try {
             return stepFactory.getStep(podInstance, tasksToLaunch);
         } catch (Exception e) {
-            LOGGER.error("Failed to generate step", e);
+            logger.error("Failed to generate step", e);
             throw new IllegalStateException(e);
         }
     }

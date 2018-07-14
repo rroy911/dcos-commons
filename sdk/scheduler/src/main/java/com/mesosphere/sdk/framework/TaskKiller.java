@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * attempts to kill a task until Mesos declares it has been killed or until Mesos doesn't know anything about this task.
  */
 public final class TaskKiller {
-    private static final Logger LOGGER = LoggingUtils.getLogger(TaskKiller.class);
+    private static final Logger logger = LoggingUtils.getLogger(TaskKiller.class);
 
     private static final Duration KILL_INTERVAL = Duration.ofSeconds(5);
     private static final Set<TaskID> TASKS_TO_KILL = new HashSet<>();
@@ -78,20 +78,20 @@ public final class TaskKiller {
         // Sometimes a task hasn't been launched ever but it has been recorded for
         // resource reservation footprint reasons, and therefore doesn't have a TaskID yet.
         if (taskId.getValue().isEmpty()) {
-            LOGGER.warn("Attempted to kill empty TaskID.");
+            logger.warn("Attempted to kill empty TaskID.");
             return;
         }
 
         synchronized (LOCK) {
             TASKS_TO_KILL.add(taskId);
-            LOGGER.info("Enqueued kill of task: {}, {} tasks to kill: {}",
+            logger.info("Enqueued kill of task: {}, {} tasks to kill: {}",
                     taskId.getValue(),
                     TASKS_TO_KILL.size(),
                     TASKS_TO_KILL.stream().map(t -> t.getValue()).collect(Collectors.toList()));
 
             // Initialize the executor if enabled and not already running.
             if (executor == null && executorEnabled) {
-                LOGGER.info("Initializing scheduled executor with an interval of {}s", KILL_INTERVAL.getSeconds());
+                logger.info("Initializing scheduled executor with an interval of {}s", KILL_INTERVAL.getSeconds());
                 executor = Executors.newSingleThreadScheduledExecutor();
                 executor.scheduleAtFixedRate(
                         new Runnable() {
@@ -140,14 +140,14 @@ public final class TaskKiller {
         }
         synchronized (LOCK) {
             if (TASKS_TO_KILL.remove(taskStatus.getTaskId())) {
-                LOGGER.info("Completed killing: {}, {} remaining tasks to kill: {}",
+                logger.info("Completed killing: {}, {} remaining tasks to kill: {}",
                         taskStatus.getTaskId().getValue(),
                         TASKS_TO_KILL.size(),
                         TASKS_TO_KILL.stream().map(t -> t.getValue()).collect(Collectors.toList()));
                 // Task is dead AND was already marked. Refrain from killing again right away to avoid kill loop:
                 return false;
             } else {
-                LOGGER.warn("Task wasn't expected to be killed: {}", taskStatus.getTaskId().getValue());
+                logger.warn("Task wasn't expected to be killed: {}", taskStatus.getTaskId().getValue());
                 // Task is dead but wasn't scheduled for killing. Scheduling it for a kill shouldn't hurt anything.
                 return true;
             }
@@ -170,10 +170,10 @@ public final class TaskKiller {
         Optional<SchedulerDriver> driver = Driver.getDriver();
 
         if (driver.isPresent()) {
-            LOGGER.info("Killing task: {}", taskId.getValue());
+            logger.info("Killing task: {}", taskId.getValue());
             driver.get().killTask(taskId);
         } else {
-            LOGGER.warn("Can't kill '{}', driver not yet set.", taskId.getValue());
+            logger.warn("Can't kill '{}', driver not yet set.", taskId.getValue());
         }
     }
 

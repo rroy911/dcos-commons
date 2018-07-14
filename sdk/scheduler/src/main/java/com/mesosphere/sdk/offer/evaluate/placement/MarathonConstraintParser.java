@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class MarathonConstraintParser {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(MarathonConstraintParser.class);
+    private static final Logger logger = LoggingUtils.getLogger(MarathonConstraintParser.class);
     private static final char ESCAPE_CHAR = '\\';
 
     private static final Map<String, Operator> SUPPORTED_OPERATORS = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -72,7 +72,7 @@ public class MarathonConstraintParser {
             return new AndRule(rowRules);
 
         } catch (Exception e) {
-            LOGGER.error("Failed to parse marathon constraints", podName, marathonConstraints);
+            logger.error("Failed to parse marathon constraints", podName, marathonConstraints);
             return new InvalidPlacementRule(marathonConstraints, e.getMessage());
         }
 
@@ -104,7 +104,7 @@ public class MarathonConstraintParser {
                     operatorName, row));
         }
         PlacementRule rule = operator.run(taskFilter, fieldName, operatorName, parameter);
-        LOGGER.info("Marathon-style row '{}' resulted in placement rule: '{}'", row, rule);
+        logger.info("Marathon-style row '{}' resulted in placement rule: '{}'", row, rule);
         return rule;
     }
 
@@ -122,7 +122,7 @@ public class MarathonConstraintParser {
             // This format technically isn't present in the Marathon docs, but we're being lenient here.
             List<String> row = mapper.readValue(marathonConstraints, new TypeReference<List<String>>() {
             });
-            LOGGER.debug("Flat list '{}' => single row: '{}'", marathonConstraints, row);
+            logger.debug("Flat list '{}' => single row: '{}'", marathonConstraints, row);
             return Arrays.asList(row);
         } catch (IOException | ClassCastException e1) {
             try {
@@ -130,7 +130,7 @@ public class MarathonConstraintParser {
                 List<List<String>> rows =
                         mapper.readValue(marathonConstraints, new TypeReference<List<List<String>>>() {
                         });
-                LOGGER.debug("Nested list '{}' => {} rows: '{}'", marathonConstraints, rows.size(), rows);
+                logger.debug("Nested list '{}' => {} rows: '{}'", marathonConstraints, rows.size(), rows);
                 return rows;
             } catch (IOException | ClassCastException e2) { // May throw ClassCastException as well as IOException
 
@@ -143,7 +143,7 @@ public class MarathonConstraintParser {
                 for (String rowStr : escapedSplit(marathonConstraints, ',')) {
                     rows.add(Lists.newArrayList(escapedSplit(rowStr, ':')));
                 }
-                LOGGER.debug("Comma/colon-separated '{}' => {} rows: '{}'", marathonConstraints, rows.size(), rows);
+                logger.debug("Comma/colon-separated '{}' => {} rows: '{}'", marathonConstraints, rows.size(), rows);
                 return rows;
             }
         }

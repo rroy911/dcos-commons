@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class PlansQueries {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(PlansQueries.class);
+    private static final Logger logger = LoggingUtils.getLogger(PlansQueries.class);
     private static final StringMatcher ENVVAR_MATCHER = RegexMatcher.create("[A-Za-z_][A-Za-z0-9_]*");
 
     private PlansQueries() {
@@ -79,7 +79,7 @@ public class PlansQueries {
 
         plan.proceed();
 
-        LOGGER.info("Started plan {} with parameters {} by user request", planName, parameters);
+        logger.info("Started plan {} with parameters {} by user request", planName, parameters);
 
         return ResponseUtils.jsonOkResponse(getCommandResult(String.format("start %s with parameters: %s",
                 planName, parameters.toString())));
@@ -302,7 +302,7 @@ public class PlansQueries {
         if (steps.size() == 1) {
             return Optional.of(steps.get(0));
         } else {
-            LOGGER.error("Expected 1 step '{}' across {} phases, got: {}", stepIdOrName, phases.size(), steps);
+            logger.error("Expected 1 step '{}' across {} phases, got: {}", stepIdOrName, phases.size(), steps);
             return Optional.empty();
         }
     }

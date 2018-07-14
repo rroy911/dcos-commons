@@ -10,26 +10,34 @@ page at http://checkstyle.sourceforge.net/config.html -->
 <module name="Checker">
 
 
-    <module name="FileTabCharacter">
-        <!-- Checks that there are no tab characters in the file.
-        -->
-    </module>
+    <!-- Checks that there are no tab characters in the file.         -->
+    <!-- See http://checkstyle.sourceforge.net/config_whitespace.html -->
+    <module name="FileTabCharacter"/>
 
+    <!-- Checks whether files end with a new line.                                 -->
+    <!-- See http://checkstyle.sourceforge.net/config_misc.html#NewlineAtEndOfFile -->
     <module name="NewlineAtEndOfFile"/>
 
     <module name="RegexpSingleline">
-        <!-- Checks that FIXME is not used in comments.  TODO is preferred.
-        -->
+        <!-- Checks that FIXME is not used in comments.  TODO is preferred. -->
         <property name="format" value="((//.*)|(\*.*))FIXME"/>
         <property name="message" value='TODO is preferred to FIXME.  e.g. "TODO (johndoe): Refactor when v2 is released."'/>
     </module>
 
     <module name="RegexpSingleline">
-        <!-- Checks that TODOs are named.  (Actually, just that they are followed
-             by an open paren.)
-        -->
+        <!-- Checks that TODOs are named.  (Actually, just that they are followed by an open paren.) -->
         <property name="format" value="((//.*)|(\*.*))TODO [^(]"/>
         <property name="message" value='All TODOs should be named.  e.g. "TODO (johndoe): Refactor when v2 is released."'/>
+    </module>
+
+    <!-- Miscellaneous other checks.                            -->
+    <!-- See http://checkstyle.sourceforge.net/config_misc.html -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$"/>
+        <property name="minimum" value="0"/>
+        <property name="maximum" value="0"/>
+        <property name="message" value="Line has trailing spaces."/>
+        <property name="severity" value="info"/>
     </module>
 
     <!-- All Java AST specific tests live under TreeWalker module. -->
@@ -40,22 +48,30 @@ page at http://checkstyle.sourceforge.net/config.html -->
         IMPORT CHECKS
 
         -->
+        <!-- See http://checkstyle.sourceforge.net/config_imports.html -->
 
+
+        <!-- Checks for redundant import statements. -->
         <module name="RedundantImport">
-            <!-- Checks for redundant import statements. -->
             <property name="severity" value="error"/>
         </module>
 
-        <!-- add in to manage order of imports-->
-        <!--<module name="ImportOrder">-->
-        <!--&lt;!&ndash; Checks for out of order import statements. &ndash;&gt;-->
+        <!--  Checks that there are no import statements that use the * notation.  -->
+        <module name="AvoidStarImport">
+            <property name="excludes" value="java.io,java.net,java.lang.Math"/>
+            <property name="allowClassImports" value="false"/>
+            <property name="allowStaticMemberImports" value="false"/>
+        </module>
 
-        <!--<property name="severity" value="warning"/>-->
-        <!--<property name="groups" value="com.apache,junit,net,org,java,javax"/>-->
-        <!--&lt;!&ndash; This ensures that static imports go first. &ndash;&gt;-->
-        <!--<property name="option" value="top"/>-->
-        <!--<property name="tokens" value="STATIC_IMPORT, IMPORT"/>-->
-        <!--</module>-->
+        <!-- Checks for out of order import statements. -->
+        <module name="ImportOrder">
+            <property name="severity" value="warning"/>
+            <property name="groups" value="com.apache,junit,net,org,java,javax"/>
+            <!-- This ensures that static imports go first. -->
+            <property name="option" value="top"/>
+            <property name="tokens" value="STATIC_IMPORT, IMPORT"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
+        </module>
 
         <!--
 
@@ -237,7 +253,7 @@ page at http://checkstyle.sourceforge.net/config.html -->
             <!-- Warn about falling through to the next case statement.  Similar to
             javac -Xlint:fallthrough, but the check is suppressed if a single-line comment
             on the last non-blank line preceding the fallen-into case contains 'fall through' (or
-            some other variants which we don't publicized to promote consistency).
+            some other variants which we don't publicize to promote consistency).
             -->
             <property name="reliefPattern"
                       value="fall through|Fall through|fallthru|Fallthru|falls through|Falls through|fallthrough|Fallthrough|No break|NO break|no break|continue on"/>

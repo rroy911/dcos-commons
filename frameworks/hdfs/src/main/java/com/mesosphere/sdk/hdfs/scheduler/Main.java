@@ -29,7 +29,7 @@ import java.util.*;
  * Main entry point for the Scheduler.
  */
 public class Main {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static final String AUTH_TO_LOCAL = "AUTH_TO_LOCAL";
     private static final String DECODED_AUTH_TO_LOCAL = "DECODED_" + AUTH_TO_LOCAL;
     private static final String TASKCFG_ALL_AUTH_TO_LOCAL = TaskEnvRouter.TASKCFG_GLOBAL_ENV_PREFIX + AUTH_TO_LOCAL;
@@ -82,7 +82,7 @@ public class Main {
             bytes = Files.readAllBytes(configFile.toPath());
         } catch (IOException e) {
             String error = String.format("Failed to read %s", configFile.getAbsolutePath());
-            LOGGER.error(error, e);
+            logger.error(error, e);
             return error;
         }
 

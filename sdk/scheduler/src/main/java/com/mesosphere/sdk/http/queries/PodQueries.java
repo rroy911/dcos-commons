@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 public class PodQueries {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(PodQueries.class);
+    private static final Logger logger = LoggingUtils.getLogger(PodQueries.class);
     private static final FailureSetter DEFAULT_FAILURE_SETTER = new FailureSetter();
 
     /**
@@ -61,7 +61,7 @@ public class PodQueries {
                 try {
                     podNames.add(PodInstance.getName(labels.getType(), labels.getIndex()));
                 } catch (Exception e) {
-                    LOGGER.warn(String.format("Failed to extract pod information from task %s", taskInfo.getName()), e);
+                    logger.warn(String.format("Failed to extract pod information from task %s", taskInfo.getName()), e);
                     unknownTaskNames.add(taskInfo.getName());
                 }
             }
@@ -76,7 +76,7 @@ public class PodQueries {
             }
             return jsonOkResponse(jsonArray);
         } catch (Exception e) {
-            LOGGER.error("Failed to fetch list of pods", e);
+            logger.error("Failed to fetch list of pods", e);
             return Response.serverError().build();
         }
     }
@@ -118,7 +118,7 @@ public class PodQueries {
 
             return jsonOkResponse(responseJson);
         } catch (Exception e) {
-            LOGGER.error("Failed to fetch collated list of task statuses by pod", e);
+            logger.error("Failed to fetch collated list of task statuses by pod", e);
             return Response.serverError().build();
         }
     }
@@ -135,7 +135,7 @@ public class PodQueries {
             }
             return jsonOkResponse(getPodInstanceStatusJson(stateStore, podInstanceName, podTasks.get()));
         } catch (Exception e) {
-            LOGGER.error(String.format("Failed to fetch status for pod '%s'", podInstanceName), e);
+            logger.error(String.format("Failed to fetch status for pod '%s'", podInstanceName), e);
             return Response.serverError().build();
         }
     }
@@ -152,7 +152,7 @@ public class PodQueries {
             }
             return jsonResponseBean(podTasks.get(), Response.Status.OK);
         } catch (Exception e) {
-            LOGGER.error(String.format("Failed to fetch info for pod '%s'", podInstanceName), e);
+            logger.error(String.format("Failed to fetch info for pod '%s'", podInstanceName), e);
             return Response.serverError().build();
         }
     }
@@ -165,13 +165,13 @@ public class PodQueries {
         try {
             taskFilter = new HashSet<>(RequestUtils.parseJsonList(bodyPayload));
         } catch (JSONException e) {
-            LOGGER.error(String.format("Failed to parse task filter '%s'", bodyPayload), e);
+            logger.error(String.format("Failed to parse task filter '%s'", bodyPayload), e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         try {
             return overrideGoalState(stateStore, podName, taskFilter, GoalStateOverride.PAUSED);
         } catch (Exception e) {
-            LOGGER.error(String.format("Failed to pause pod '%s' with task filter '%s'", podName, taskFilter), e);
+            logger.error(String.format("Failed to pause pod '%s' with task filter '%s'", podName, taskFilter), e);
             return Response.serverError().build();
         }
     }
@@ -184,13 +184,13 @@ public class PodQueries {
         try {
             taskFilter = new HashSet<>(RequestUtils.parseJsonList(bodyPayload));
         } catch (JSONException e) {
-            LOGGER.error(String.format("Failed to parse task filter '%s'", bodyPayload), e);
+            logger.error(String.format("Failed to parse task filter '%s'", bodyPayload), e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         try {
             return overrideGoalState(stateStore, podName, taskFilter, GoalStateOverride.NONE);
         } catch (Exception e) {
-            LOGGER.error(String.format("Failed to resume pod '%s' with task filter '%s'", podName, taskFilter), e);
+            logger.error(String.format("Failed to resume pod '%s' with task filter '%s'", podName, taskFilter), e);
             return Response.serverError().build();
         }
     }
@@ -206,7 +206,7 @@ public class PodQueries {
                 RequestUtils.filterPodTasks(podInstanceName, allPodTasks.get(), taskNameFilter);
         if (podTasks.isEmpty() || podTasks.size() < taskNameFilter.size()) {
             // one or more requested tasks were not found.
-            LOGGER.error("Request had task filter: {} but pod '{}' tasks are: {} (matching: {})",
+            logger.error("Request had task filter: {} but pod '{}' tasks are: {} (matching: {})",
                     taskNameFilter,
                     podInstanceName,
                     allPodTasks.get().stream().map(t -> t.getInfo().getName()).collect(Collectors.toList()),
@@ -216,7 +216,7 @@ public class PodQueries {
 
         // invoke the restart request itself against ALL tasks. this ensures that they're ALL flagged as failed via
         // FailureUtils, which is then checked by DefaultRecoveryPlanManager.
-        LOGGER.info("Performing {} goal state override of {} tasks in pod {}:",
+        logger.info("Performing {} goal state override of {} tasks in pod {}:",
                 override, podTasks.size(), podInstanceName);
 
         // First pass: Store the desired override for each task
@@ -237,7 +237,7 @@ public class PodQueries {
         try {
             return restartPod(stateStore, configStore, podInstanceName, recoveryType, DEFAULT_FAILURE_SETTER);
         } catch (Exception e) {
-            LOGGER.error(String.format("Failed to %s pod '%s'",
+            logger.error(String.format("Failed to %s pod '%s'",
                     recoveryType == RecoveryType.PERMANENT ? "replace" : "restart", podInstanceName), e);
             return Response.serverError().build();
         }
@@ -259,7 +259,7 @@ public class PodQueries {
 
         // invoke the restart request itself against ALL tasks. this ensures that they're ALL flagged as failed via
         // FailureUtils, which is then checked by DefaultRecoveryPlanManager.
-        LOGGER.info("Performing {} restart of pod {} by killing {} tasks:",
+        logger.info("Performing {} restart of pod {} by killing {} tasks:",
                 recoveryType, podInstanceName, podTasks.get().size());
 
         if (recoveryType.equals(RecoveryType.PERMANENT)) {
@@ -293,13 +293,13 @@ public class PodQueries {
         for (Protos.TaskInfo taskInfo : taskInfos) {
             if (taskInfo.getTaskId().getValue().isEmpty()) {
                 // Skip marking 'stub' tasks which haven't been launched as permanently failed:
-                LOGGER.info("Not marking task {} as failed due to empty taskId", taskInfo.getName());
+                logger.info("Not marking task {} as failed due to empty taskId", taskInfo.getName());
                 continue;
             }
             try {
                 podInstances.add(TaskUtils.getPodInstance(configStore, taskInfo));
             } catch (TaskException e) {
-                LOGGER.error(String.format("Failed to get pod for task %s", taskInfo.getTaskId().getValue()), e);
+                logger.error(String.format("Failed to get pod for task %s", taskInfo.getTaskId().getValue()), e);
             }
         }
 
@@ -313,12 +313,12 @@ public class PodQueries {
         for (TaskInfoAndStatus taskToKill : tasksToKill) {
             final Protos.TaskInfo taskInfo = taskToKill.getInfo();
             if (taskToKill.hasStatus()) {
-                LOGGER.info("  {} ({}): currently has status {}",
+                logger.info("  {} ({}): currently has status {}",
                         taskInfo.getName(),
                         taskInfo.getTaskId().getValue(),
                         taskToKill.getStatus().get().getState());
             } else {
-                LOGGER.info("  {} ({}): no status available",
+                logger.info("  {} ({}): no status available",
                         taskInfo.getName(),
                         taskInfo.getTaskId().getValue());
             }
@@ -374,7 +374,7 @@ public class PodQueries {
             case PENDING:
                 return Optional.of(overrideStatus.target.getTransitioningName());
             default:
-                LOGGER.error("Unsupported progress state: {}", overrideStatus.progress);
+                logger.error("Unsupported progress state: {}", overrideStatus.progress);
                 return Optional.empty();
             }
         }

@@ -27,7 +27,7 @@ import com.mesosphere.sdk.scheduler.uninstall.UninstallScheduler;
  */
 public class MultiServiceManager {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(MultiServiceManager.class);
+    private static final Logger logger = LoggingUtils.getLogger(MultiServiceManager.class);
 
     private final ReadWriteLock internalLock = new ReentrantReadWriteLock();
     private final Lock rlock = internalLock.readLock();
@@ -123,10 +123,10 @@ public class MultiServiceManager {
             }
 
             if (services.put(originalName, service) == null) {
-                LOGGER.info("Added new service: {} (now {} service{})",
+                logger.info("Added new service: {} (now {} service{})",
                         originalName, services.size(), services.size() == 1 ? "" : "s");
             } else {
-                LOGGER.info("Replaced existing service: {} (now {} service{})",
+                logger.info("Replaced existing service: {} (now {} service{})",
                         originalName, services.size(), services.size() == 1 ? "" : "s");
             }
 
@@ -163,7 +163,7 @@ public class MultiServiceManager {
         }
         if (!sanitizedServiceName.isPresent()) {
             // Bad task id.
-            LOGGER.error("Received task status with malformed id '{}', unable to route to service: {}",
+            logger.error("Received task status with malformed id '{}', unable to route to service: {}",
                     status.getTaskId().getValue(), TextFormat.shortDebugString(status));
             return Optional.empty();
         }
@@ -189,18 +189,18 @@ public class MultiServiceManager {
     public void uninstallServices(Collection<String> finishedServiceNames) {
         rwlock.lock();
         try {
-            LOGGER.info("Marking services as uninstalling: {} (out of {} service{})",
+            logger.info("Marking services as uninstalling: {} (out of {} service{})",
                     finishedServiceNames, services.size(), services.size() == 1 ? "" : "s");
 
             for (String name : finishedServiceNames) {
                 AbstractScheduler currentService = services.get(name);
                 if (currentService == null) {
-                    LOGGER.warn("Service '{}' does not exist, cannot trigger uninstall", name);
+                    logger.warn("Service '{}' does not exist, cannot trigger uninstall", name);
                     continue;
                 }
                 if (currentService instanceof UninstallScheduler) {
                     // Already uninstalling
-                    LOGGER.warn("Service '{}' is already uninstalling, leaving as-is", name);
+                    logger.warn("Service '{}' is already uninstalling, leaving as-is", name);
                     continue;
                 }
 
@@ -228,7 +228,7 @@ public class MultiServiceManager {
     public void removeServices(Collection<String> uninstalledServiceNames) {
         rwlock.lock();
         try {
-            LOGGER.info("Removing {} uninstalled service{}: {} (from {} total service{})",
+            logger.info("Removing {} uninstalled service{}: {} (from {} total service{})",
                     uninstalledServiceNames.size(),
                     uninstalledServiceNames.size() == 1 ? "" : "s",
                     uninstalledServiceNames,
@@ -271,7 +271,7 @@ public class MultiServiceManager {
         rlock.lock();
         try {
             isRegistered = true;
-            LOGGER.info("Notifying {} service{} of {}",
+            logger.info("Notifying {} service{} of {}",
                     services.size(),
                     services.size() == 1 ? "" : "s",
                     reRegistered ? "re-registration" : "initial registration");

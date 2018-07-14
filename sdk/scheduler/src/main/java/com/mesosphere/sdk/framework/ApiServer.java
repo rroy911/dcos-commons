@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  */
 public class ApiServer {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ApiServer.class);
+    private static final Logger logger = LoggingUtils.getLogger(ApiServer.class);
 
     private final int port;
     private final Server server;
@@ -60,14 +60,14 @@ public class ApiServer {
         final String expectedAddress = schedulerConfig.getSchedulerIP();
         final Duration waitTime = Duration.ofSeconds(5);
 
-        LOGGER.info("Waiting for the scheduler host {} to resolve to {}. Wait will timeout after {}ms"
+        logger.info("Waiting for the scheduler host {} to resolve to {}. Wait will timeout after {}ms"
                 , schedulerHostname, expectedAddress, schedulerConfig.getApiServerInitTimeout().toMillis());
 
         final Timer resolutionTimer = new Timer("API-resolution-timeout");
         resolutionTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                LOGGER.error("Unable to lookup scheduler host {} within {}ms",
+                logger.error("Unable to lookup scheduler host {} within {}ms",
                         schedulerHostname, schedulerConfig.getApiServerInitTimeout().toMillis());
                 ProcessExit.exit(ProcessExit.API_SERVER_ERROR);
             }
@@ -79,10 +79,10 @@ public class ApiServer {
                     return;
                 }
 
-                LOGGER.info("Waiting {}ms to retry scheduler host resolution", waitTime.toMillis());
+                logger.info("Waiting {}ms to retry scheduler host resolution", waitTime.toMillis());
                 Thread.sleep(waitTime.toMillis());
             } catch (InterruptedException ie) {
-                LOGGER.error("DNS resolution interrupted", ie);
+                logger.error("DNS resolution interrupted", ie);
                 ProcessExit.exit(ProcessExit.API_SERVER_ERROR);
             } finally {
                 resolutionTimer.cancel();
@@ -99,30 +99,30 @@ public class ApiServer {
             // It's acceptable to have both an ipv6 and an ipv4 address.
             // If there are two of each, uh oh.
             if (addresses.size() > 2) {
-                LOGGER.warn("Scheduler host {} resolved to more than two addresses: {}", addresses);
+                logger.warn("Scheduler host {} resolved to more than two addresses: {}", addresses);
                 return false;
             } else if (addresses.size() == 2) {
                 final boolean firstIsIpv4 = addresses.get(0) instanceof Inet4Address;
                 final boolean secondIsIpv4 = addresses.get(1) instanceof Inet4Address;
 
                 if ((firstIsIpv4 && secondIsIpv4) || (!firstIsIpv4 && !secondIsIpv4)) {
-                    LOGGER.warn("Scheduler host {} resolved to {} which are both {} addresses",
+                    logger.warn("Scheduler host {} resolved to {} which are both {} addresses",
                             schedulerHostname, addresses, firstIsIpv4 ? "IPV4" : "IPV6");
                     return false;
                 }
             }
 
             if (!addresses.stream().map(InetAddress::getHostAddress).anyMatch(s -> s.equals(expectedAddress))) {
-                LOGGER.warn("Scheduler host {} resolved to {} not the expected address {}",
+                logger.warn("Scheduler host {} resolved to {} not the expected address {}",
                         schedulerHostname, addresses, expectedAddress);
                 return false;
             }
 
-            LOGGER.info("Resolved scheduler host {} to expected address {}",
+            logger.info("Resolved scheduler host {} to expected address {}",
                     schedulerHostname, expectedAddress);
             return true;
         } catch (UnknownHostException uhe) {
-            LOGGER.warn("Unable to look up scheduler host {}", schedulerHostname);
+            logger.warn("Unable to look up scheduler host {}", schedulerHostname);
             return false;
         }
     }
@@ -169,7 +169,7 @@ public class ApiServer {
             @Override
             public void run() {
                 if (!server.isStarted()) {
-                    LOGGER.error("API Server failed to start at port {} within {}ms", port, startTimeout.toMillis());
+                    logger.error("API Server failed to start at port {} within {}ms", port, startTimeout.toMillis());
                     ProcessExit.exit(ProcessExit.API_SERVER_ERROR);
                 }
             }
@@ -178,21 +178,21 @@ public class ApiServer {
         Runnable runServerCallback = new Runnable() {
             public void run() {
                 try {
-                    LOGGER.info("Starting API server at port {}", port);
+                    logger.info("Starting API server at port {}", port);
                     server.start();
                     int localPort = ((ServerConnector) server.getConnectors()[0]).getLocalPort();
-                    LOGGER.info("API server started at port {}", localPort);
+                    logger.info("API server started at port {}", localPort);
                     startTimer.cancel();
                     server.join();
                 } catch (Exception e) {
-                    LOGGER.error(String.format("API server at port %d failed with exception: ", port), e);
+                    logger.error(String.format("API server at port %d failed with exception: ", port), e);
                     ProcessExit.exit(ProcessExit.API_SERVER_ERROR, e);
                 } finally {
-                    LOGGER.info("API server at port {} exiting", port);
+                    logger.info("API server at port {} exiting", port);
                     try {
                         server.destroy();
                     } catch (Exception e) {
-                        LOGGER.error(String.format("Failed to stop API server at port %d with exception: ", port), e);
+                        logger.error(String.format("Failed to stop API server at port %d with exception: ", port), e);
                     }
                 }
             }
@@ -226,7 +226,7 @@ public class ApiServer {
                 serverThread.join();
                 break;
             } catch (InterruptedException e) {
-                LOGGER.error("Interrupted while waiting for HTTP server to join. Retrying wait.", e);
+                logger.error("Interrupted while waiting for HTTP server to join. Retrying wait.", e);
             }
         }
     }

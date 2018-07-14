@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * to which they are attached.
  */
 public class PodInfoBuilder {
-    private static final Logger LOGGER = LoggingUtils.getLogger(PodInfoBuilder.class);
+    private static final Logger logger = LoggingUtils.getLogger(PodInfoBuilder.class);
 
     private static final String CONFIG_TEMPLATE_KEY_FORMAT = "CONFIG_TEMPLATE_%s";
     private static final String CONFIG_TEMPLATE_DOWNLOAD_PATH = "config-templates/";
@@ -233,7 +233,7 @@ public class PodInfoBuilder {
                     schedulerConfig)));
 
             if (override.equals(GoalStateOverride.PAUSED)) {
-                LOGGER.info("Overriding task command: {}", override);
+                logger.info("Overriding task command: {}", override);
                 commandBuilder.setValue(schedulerConfig.getPauseOverrideCmd());
             } else {
                 commandBuilder.setValue(taskSpec.getCommand().get().getValue());
@@ -409,12 +409,12 @@ public class PodInfoBuilder {
             GoalStateOverride override,
             SchedulerConfig schedulerConfig) {
         if (!taskSpec.getHealthCheck().isPresent()) {
-            LOGGER.debug("No health check defined for taskSpec: {}", taskSpec.getName());
+            logger.debug("No health check defined for taskSpec: {}", taskSpec.getName());
             return;
         }
 
         if (override.equals(GoalStateOverride.PAUSED)) {
-            LOGGER.info("Removing health check for PAUSED task: {}", taskSpec.getName());
+            logger.info("Removing health check for PAUSED task: {}", taskSpec.getName());
             return;
         }
 
@@ -462,7 +462,7 @@ public class PodInfoBuilder {
 
         Optional<ReadinessCheckSpec> readinessCheckSpecOptional = getReadinessCheck(taskSpec, override);
         if (!readinessCheckSpecOptional.isPresent()) {
-            LOGGER.debug("No readiness check defined for taskSpec: {}", taskSpec.getName());
+            logger.debug("No readiness check defined for taskSpec: {}", taskSpec.getName());
             return;
         }
 
@@ -559,7 +559,7 @@ public class PodInfoBuilder {
         // With the default executor, all NetworkInfos must be defined on the executor itself rather than individual
         // tasks. This check can be made much less ugly once the custom executor no longer need be supported.
         if (!podSpec.getNetworks().isEmpty() && !isTaskContainer) {
-            LOGGER.info("Adding NetworkInfos for networks: {}",
+            logger.info("Adding NetworkInfos for networks: {}",
                     podSpec.getNetworks().stream().map(n -> n.getName()).collect(Collectors.toList()));
             containerInfo.addAllNetworkInfos(
                     podSpec.getNetworks().stream().map(PodInfoBuilder::getNetworkInfo).collect(Collectors.toList()));

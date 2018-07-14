@@ -23,7 +23,7 @@ import org.slf4j.Logger;
  */
 public class SchedulerDriverFactory {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(SchedulerDriverFactory.class);
+    private static final Logger logger = LoggingUtils.getLogger(SchedulerDriverFactory.class);
 
     /**
      * Creates and returns a new {@link SchedulerDriver} without a credential secret.
@@ -66,7 +66,7 @@ public class SchedulerDriverFactory {
         if (credentialSecret != null && credentialSecret.length > 0) {
             // User has manually provided a Secret. Provide a Credential with Principal + Secret.
             // (note: we intentionally avoid logging the content of the credential secret, just in case)
-            LOGGER.info("Creating secret authenticated MesosSchedulerDriver for "
+            logger.info("Creating secret authenticated MesosSchedulerDriver for "
                     + "scheduler[{}], frameworkInfo[{}], masterUrl[{}], credentialSecret[{} bytes]",
                     scheduler.getClass().getSimpleName(),
                     TextFormat.shortDebugString(frameworkInfo),
@@ -78,7 +78,7 @@ public class SchedulerDriverFactory {
                     .build();
         } else if (schedulerConfig.isSideChannelActive()) {
             // Sidechannel auth is enabled. Provide a Credential with only the Principal set.
-            LOGGER.info("Creating sidechannel authenticated MesosSchedulerDriver for "
+            logger.info("Creating sidechannel authenticated MesosSchedulerDriver for "
                     + "scheduler[{}], frameworkInfo[{}], masterUrl[{}]",
                     scheduler.getClass().getSimpleName(), TextFormat.shortDebugString(frameworkInfo), masterUrl);
             credential = Credential.newBuilder()
@@ -86,7 +86,7 @@ public class SchedulerDriverFactory {
                     .build();
         } else {
             // No auth. Provide no credential.
-            LOGGER.info("Creating unauthenticated MesosSchedulerDriver for "
+            logger.info("Creating unauthenticated MesosSchedulerDriver for "
                     + "scheduler[{}], frameworkInfo[{}], masterUrl[{}]",
                     scheduler.getClass().getSimpleName(), TextFormat.shortDebugString(frameworkInfo), masterUrl);
             credential = null;
@@ -113,7 +113,7 @@ public class SchedulerDriverFactory {
                     }
 
                     if (mesosAPIVersion.equals("V1")) {
-                        LOGGER.warn(
+                        logger.warn(
                                 "Current DC/OS cluster doesn't support the Mesos V1 API in strict mode. Using V0...");
                     }
                     return new V0Mesos(
@@ -135,7 +135,7 @@ public class SchedulerDriverFactory {
                 }
 
                 if (mesosAPIVersion.equals("V1")) {
-                    LOGGER.warn(
+                    logger.warn(
                             "Current DC/OS cluster doesn't support the Mesos V1 API in strict mode. Using V0...");
                 }
                 return new V0Mesos(this, EvolverDevolver.evolve(frameworkInfo), masterUrl);

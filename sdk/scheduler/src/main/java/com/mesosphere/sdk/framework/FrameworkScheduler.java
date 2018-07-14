@@ -30,7 +30,7 @@ import com.mesosphere.sdk.storage.Persister;
  */
 public class FrameworkScheduler implements Scheduler {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(FrameworkScheduler.class);
+    private static final Logger logger = LoggingUtils.getLogger(FrameworkScheduler.class);
 
     /**
      * Mesos may call registered() multiple times in the lifespan of a Scheduler process, specifically when there's
@@ -118,16 +118,16 @@ public class FrameworkScheduler implements Scheduler {
         try {
             if (registerCalled.getAndSet(true)) {
                 // This may occur as the result of a master election.
-                LOGGER.info("Already registered, calling reregistered()");
+                logger.info("Already registered, calling reregistered()");
                 reregistered(driver, masterInfo);
                 return;
             }
 
-            LOGGER.info("Registered framework with frameworkId: {}", frameworkId.getValue());
+            logger.info("Registered framework with frameworkId: {}", frameworkId.getValue());
             try {
                 frameworkStore.storeFrameworkId(frameworkId);
             } catch (Exception e) {
-                LOGGER.error(String.format(
+                logger.error(String.format(
                         "Unable to store registered framework ID '%s'", frameworkId.getValue()), e);
                 ProcessExit.exit(ProcessExit.REGISTRATION_FAILURE, e);
             }
@@ -146,7 +146,7 @@ public class FrameworkScheduler implements Scheduler {
     @Override
     public void reregistered(SchedulerDriver driver, Protos.MasterInfo masterInfo) {
         try {
-            LOGGER.info("Re-registered with master: {}", TextFormat.shortDebugString(masterInfo));
+            logger.info("Re-registered with master: {}", TextFormat.shortDebugString(masterInfo));
             updateDriverAndDomain(driver, masterInfo);
             mesosEventClient.registered(true);
         } catch (Throwable e) {
@@ -160,7 +160,7 @@ public class FrameworkScheduler implements Scheduler {
             Metrics.incrementReceivedOffers(offers.size());
 
             if (!apiServerStarted.get()) {
-                LOGGER.info("Declining {} offer{}: Waiting for API Server to start.",
+                logger.info("Declining {} offer{}: Waiting for API Server to start.",
                         offers.size(), offers.size() == 1 ? "" : "s");
                 OfferProcessor.declineShort(offers);
                 return;
@@ -211,9 +211,9 @@ public class FrameworkScheduler implements Scheduler {
         }
 
         // Build a new offer which only contains the good resources. Log the bad resources.
-        LOGGER.info("Filtered {} resources from offer {}:", badResources.size(), offer.getId().getValue());
+        logger.info("Filtered {} resources from offer {}:", badResources.size(), offer.getId().getValue());
         for (Protos.Resource badResource : badResources) {
-            LOGGER.info("  {}", TextFormat.shortDebugString(badResource));
+            logger.info("  {}", TextFormat.shortDebugString(badResource));
         }
         return offer.toBuilder()
                 .clearResources()
@@ -224,7 +224,7 @@ public class FrameworkScheduler implements Scheduler {
     @Override
     public void statusUpdate(SchedulerDriver driver, Protos.TaskStatus status) {
         try {
-            LOGGER.info("Received status update for taskId={} state={} message={} protobuf={}",
+            logger.info("Received status update for taskId={} state={} message={} protobuf={}",
                     status.getTaskId().getValue(),
                     status.getState().toString(),
                     status.getMessage(),
@@ -235,14 +235,14 @@ public class FrameworkScheduler implements Scheduler {
             switch (response.result) {
             case UNKNOWN_TASK:
                 if (eligibleToKill) {
-                    LOGGER.info("Received status update for unknown task, marking task to be killed: {}",
+                    logger.info("Received status update for unknown task, marking task to be killed: {}",
                             status.getTaskId().getValue());
                     TaskKiller.killTask(status.getTaskId());
                 } else {
                     // Special case: Mesos can send TASK_LOST+REASON_RECONCILIATION as a response to a prior kill
                     // request against a task that is unknown to Mesos. When this happens, we don't want to repeat the
                     // kill, because that would create a Kill -> Status -> Kill -> ... loop
-                    LOGGER.warn("Received status update for unknown task, but task should not be killed again: {}",
+                    logger.warn("Received status update for unknown task, but task should not be killed again: {}",
                             status.getTaskId().getValue());
                 }
                 break;
@@ -258,7 +258,7 @@ public class FrameworkScheduler implements Scheduler {
     @Override
     public void offerRescinded(SchedulerDriver driver, Protos.OfferID offerId) {
         try {
-            LOGGER.info("Rescinding offer: {}", offerId.getValue());
+            logger.info("Rescinding offer: {}", offerId.getValue());
             offerProcessor.dequeue(offerId);
         } catch (Throwable e) {
             logExceptionAndExit(e);
@@ -269,7 +269,7 @@ public class FrameworkScheduler implements Scheduler {
     public void frameworkMessage(
             SchedulerDriver driver, Protos.ExecutorID executorId, Protos.SlaveID agentId, byte[] data) {
         try {
-            LOGGER.error("Received unsupported {} byte Framework Message from Executor {} on Agent {}",
+            logger.error("Received unsupported {} byte Framework Message from Executor {} on Agent {}",
                     data.length, executorId.getValue(), agentId.getValue());
         } catch (Throwable e) {
             logExceptionAndExit(e);
@@ -279,7 +279,7 @@ public class FrameworkScheduler implements Scheduler {
     @Override
     public void disconnected(SchedulerDriver driver) {
         try {
-            LOGGER.error("Disconnected from Master, shutting down.");
+            logger.error("Disconnected from Master, shutting down.");
             ProcessExit.exit(ProcessExit.DISCONNECTED);
         } catch (Throwable e) {
             logExceptionAndExit(e);
@@ -289,7 +289,7 @@ public class FrameworkScheduler implements Scheduler {
     @Override
     public void slaveLost(SchedulerDriver driver, Protos.SlaveID agentId) {
         try {
-            LOGGER.warn("Agent lost: {}", agentId.getValue());
+            logger.warn("Agent lost: {}", agentId.getValue());
         } catch (Throwable e) {
             logExceptionAndExit(e);
         }
@@ -298,7 +298,7 @@ public class FrameworkScheduler implements Scheduler {
     @Override
     public void executorLost(SchedulerDriver driver, Protos.ExecutorID executorId, Protos.SlaveID agentId, int status) {
         try {
-            LOGGER.warn("Lost Executor: {} on Agent: {}", executorId.getValue(), agentId.getValue());
+            logger.warn("Lost Executor: {} on Agent: {}", executorId.getValue(), agentId.getValue());
         } catch (Throwable e) {
             logExceptionAndExit(e);
         }
@@ -307,7 +307,7 @@ public class FrameworkScheduler implements Scheduler {
     @Override
     public void error(SchedulerDriver driver, String message) {
         try {
-            LOGGER.error("SchedulerDriver returned an error, shutting down: {}", message);
+            logger.error("SchedulerDriver returned an error, shutting down: {}", message);
             ProcessExit.exit(ProcessExit.ERROR);
         } catch (Throwable e) {
             logExceptionAndExit(e);
@@ -323,7 +323,7 @@ public class FrameworkScheduler implements Scheduler {
      * @param e the exception that was thrown
      */
     private static void logExceptionAndExit(Throwable e) {
-        LOGGER.error("Got exception when invoked by Mesos, shutting down.");
+        logger.error("Got exception when invoked by Mesos, shutting down.");
         ProcessExit.exit(ProcessExit.ERROR, e);
     }
 

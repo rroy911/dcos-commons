@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public class FrameworkRunner {
     private static final int TWO_WEEK_SEC = 2 * 7 * 24 * 60 * 60;
-    private static final Logger LOGGER = LoggingUtils.getLogger(FrameworkRunner.class);
+    private static final Logger logger = LoggingUtils.getLogger(FrameworkRunner.class);
 
     /**
      * Empty complete deploy plan to be used if the scheduler is uninstalling and was launched in a finished state.
@@ -78,7 +78,7 @@ public class FrameworkRunner {
         // process in a bare-bones state where it's only serving the endpoints necessary for Cosmos to remove the
         // process it from Marathon, and where it's not actually registering with Mesos.
         if (schedulerConfig.isUninstallEnabled() && !new FrameworkStore(persister).fetchFrameworkId().isPresent()) {
-            LOGGER.info("Not registering with Mesos because uninstall is complete.");
+            logger.info("Not registering with Mesos because uninstall is complete.");
 
             try {
                 // Just in case, try to clear any other remaining data from ZK. In practice there shouldn't be any left?
@@ -116,12 +116,12 @@ public class FrameworkRunner {
         });
 
         Protos.FrameworkInfo frameworkInfo = getFrameworkInfo(frameworkStore.fetchFrameworkId());
-        LOGGER.info("Registering framework: {}", TextFormat.shortDebugString(frameworkInfo));
+        logger.info("Registering framework: {}", TextFormat.shortDebugString(frameworkInfo));
         String zkUri = String.format("zk://%s/mesos", frameworkConfig.getZookeeperHostPort());
         Protos.Status status = new SchedulerDriverFactory()
                 .create(frameworkScheduler, frameworkInfo, zkUri, schedulerConfig)
                 .run();
-        LOGGER.info("Scheduler driver exited with status: {}", status);
+        logger.info("Scheduler driver exited with status: {}", status);
         // DRIVER_STOPPED will occur when we call stop(boolean) during uninstall.
         // When this happens, we want to continue running so that we can advertise that the uninstall plan is complete.
         if (status == Protos.Status.DRIVER_STOPPED) {
@@ -196,7 +196,7 @@ public class FrameworkRunner {
                 new Runnable() {
             @Override
             public void run() {
-                LOGGER.info("Started trivially healthy API server.");
+                logger.info("Started trivially healthy API server.");
             }
         });
         httpServer.join();

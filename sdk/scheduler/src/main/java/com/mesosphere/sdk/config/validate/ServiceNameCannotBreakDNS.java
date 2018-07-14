@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public class ServiceNameCannotBreakDNS implements ConfigValidator<ServiceSpec> {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ServiceNameCannotBreakDNS.class);
+    private static final Logger logger = LoggingUtils.getLogger(ServiceNameCannotBreakDNS.class);
 
     private static final int MAX_SERVICE_NAME_LENGTH = 63;
 
@@ -28,7 +28,7 @@ public class ServiceNameCannotBreakDNS implements ConfigValidator<ServiceSpec> {
         if (oldConfig.isPresent()) {
             // There is. We can at most WARN that the name is going to cause truncated DNS.
             if (!nameWithinSubDomainLimit(newConfig.getName())) {
-                LOGGER.warn("The service name (without slashes) exceeds the maximum size allowed in a DNS subdomain.");
+                logger.warn("The service name (without slashes) exceeds the maximum size allowed in a DNS subdomain.");
             }
 
             return Collections.emptyList();

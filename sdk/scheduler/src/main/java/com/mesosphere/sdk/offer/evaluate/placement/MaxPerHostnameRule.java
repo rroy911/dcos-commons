@@ -41,7 +41,7 @@ import java.util.Collections;
  */
 public class MaxPerHostnameRule extends MaxPerRule {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(MaxPerHostnameRule.class);
+    private static final Logger logger = LoggingUtils.getLogger(MaxPerHostnameRule.class);
 
     @Valid
     @Min(1)
@@ -109,7 +109,7 @@ public class MaxPerHostnameRule extends MaxPerRule {
         try {
             return Arrays.asList(new TaskLabelReader(taskInfo).getHostname());
         } catch (TaskException e) {
-            LOGGER.warn("Unable to extract hostname from task for filtering", e);
+            logger.warn("Unable to extract hostname from task for filtering", e);
             return Collections.emptyList();
         }
     }

@@ -35,7 +35,7 @@ import java.util.*;
  */
 public class ServiceTestRunner {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(ServiceTestRunner.class);
+    private static final Logger logger = LoggingUtils.getLogger(ServiceTestRunner.class);
     private static final Random RANDOM = new Random();
 
     /**
@@ -357,14 +357,14 @@ public class ServiceTestRunner {
         SchedulerDriver mockDriver = Mockito.mock(SchedulerDriver.class);
         for (SimulationTick tick : ticks) {
             if (tick instanceof Expect) {
-                LOGGER.info("EXPECT: {}", tick.getDescription());
+                logger.info("EXPECT: {}", tick.getDescription());
                 try {
                     ((Expect) tick).expect(clusterState, mockDriver);
                 } catch (Throwable e) {
                     throw buildSimulationError(ticks, tick, e);
                 }
             } else if (tick instanceof Send) {
-                LOGGER.info("SEND:   {}", tick.getDescription());
+                logger.info("SEND:   {}", tick.getDescription());
                 try {
                     ((Send) tick).send(clusterState, mockDriver, frameworkScheduler);
                 } catch (Throwable e) {

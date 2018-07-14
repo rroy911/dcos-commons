@@ -14,7 +14,7 @@ import java.util.*;
  * consumption of the {@link Offer}'s resources.
  */
 public class MesosResourcePool {
-    private static final Logger LOGGER = LoggingUtils.getLogger(MesosResourcePool.class);
+    private static final Logger logger = LoggingUtils.getLogger(MesosResourcePool.class);
     private final Offer offer;
 
     /**
@@ -99,7 +99,7 @@ public class MesosResourcePool {
                 if (sufficientValue(value, mesosResource.getValue())) {
                     dynamicallyReservedPoolByResourceId.remove(resourceId);
                 } else {
-                    LOGGER.warn("Reserved atomic quantity of {} is insufficient: desired {}, reserved {}",
+                    logger.warn("Reserved atomic quantity of {} is insufficient: desired {}, reserved {}",
                             name,
                             TextFormat.shortDebugString(value),
                             TextFormat.shortDebugString(mesosResource.getValue()));
@@ -119,7 +119,7 @@ public class MesosResourcePool {
                 }
             }
         } else {
-            LOGGER.warn("Failed to find reserved {} resource with ID: {}. Reserved resource IDs are: {}",
+            logger.warn("Failed to find reserved {} resource with ID: {}. Reserved resource IDs are: {}",
                     name,
                     resourceId,
                     dynamicallyReservedPoolByResourceId.keySet());
@@ -152,9 +152,9 @@ public class MesosResourcePool {
 
         if (!sufficientResource.isPresent()) {
             if (atomicResources == null) {
-                LOGGER.info("Offer lacks any atomic resources named {}", resourceName);
+                logger.info("Offer lacks any atomic resources named {}", resourceName);
             } else {
-                LOGGER.info("Offered quantity in all {} instances of {} is insufficient: desired {}",
+                logger.info("Offered quantity in all {} instances of {} is insufficient: desired {}",
                         atomicResources.size(),
                         resourceName,
                         value);
@@ -167,7 +167,7 @@ public class MesosResourcePool {
     public Optional<MesosResource> consumeReservableMerged(String name, Value desiredValue, String preReservedRole) {
         Map<String, Value> pool = reservableMergedPoolByRole.get(preReservedRole);
         if (pool == null) {
-            LOGGER.info("No unreserved resources available for role '{}'. Reservable roles are: {}",
+            logger.info("No unreserved resources available for role '{}'. Reservable roles are: {}",
                     preReservedRole, reservableMergedPoolByRole.keySet());
             return Optional.empty();
         }
@@ -190,9 +190,9 @@ public class MesosResourcePool {
             return Optional.of(new MesosResource(builder.build()));
         } else {
             if (availableValue == null) {
-                LOGGER.info("Offer lacks any unreserved {} resources for role {}", name, preReservedRole);
+                logger.info("Offer lacks any unreserved {} resources for role {}", name, preReservedRole);
             } else {
-                LOGGER.info("Offered quantity of {} for role {} is insufficient: desired {}, offered {}",
+                logger.info("Offered quantity of {} for role {} is insufficient: desired {}, offered {}",
                         name,
                         preReservedRole,
                         TextFormat.shortDebugString(desiredValue),
@@ -203,7 +203,7 @@ public class MesosResourcePool {
     }
 
     public void free(MesosResource mesosResource) {
-        LOGGER.info("Freeing resource: {}",  mesosResource.toString());
+        logger.info("Freeing resource: {}",  mesosResource.toString());
         if (mesosResource.isAtomic()) {
             freeAtomicResource(mesosResource);
             return;
@@ -216,7 +216,7 @@ public class MesosResourcePool {
     private void freeMergedResource(MesosResource mesosResource) {
         if (mesosResource.getResourceId().isPresent()) {
             dynamicallyReservedPoolByResourceId.remove(mesosResource.getResourceId().get());
-            LOGGER.info("Freed resource: {}",
+            logger.info("Freed resource: {}",
                     !dynamicallyReservedPoolByResourceId.containsKey(mesosResource.getResourceId().get()));
         }
 

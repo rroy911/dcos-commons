@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class StateQueries {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(StateQueries.class);
+    private static final Logger logger = LoggingUtils.getLogger(StateQueries.class);
 
     static final String FILE_NAME_PREFIX = "file-";
     static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
@@ -53,11 +53,11 @@ public class StateQueries {
                 JSONArray idArray = new JSONArray(Arrays.asList(frameworkIdOptional.get().getValue()));
                 return ResponseUtils.jsonOkResponse(idArray);
             } else {
-                LOGGER.warn("No framework ID exists");
+                logger.warn("No framework ID exists");
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (StateStoreException ex) {
-            LOGGER.error("Failed to fetch framework ID", ex);
+            logger.error("Failed to fetch framework ID", ex);
             return Response.serverError().build();
         }
 
@@ -65,27 +65,27 @@ public class StateQueries {
 
     public static Response getFiles(StateStore stateStore) {
         try {
-            LOGGER.info("Getting all files");
+            logger.info("Getting all files");
             Collection<String> fileNames = getFileNames(stateStore);
             return ResponseUtils.plainOkResponse(fileNames.toString());
         } catch (StateStoreException e) {
-            LOGGER.error("Failed to get a list of files", e);
+            logger.error("Failed to get a list of files", e);
             return Response.serverError().build();
         }
     }
 
     public static Response getFile(StateStore stateStore, String fileName) {
         try {
-            LOGGER.info("Getting file {}", fileName);
+            logger.info("Getting file {}", fileName);
             return ResponseUtils.plainOkResponse(getFileContent(stateStore, fileName));
         } catch (StateStoreException e) {
-            LOGGER.error(String.format("Failed to get file %s", fileName), e);
+            logger.error(String.format("Failed to get file %s", fileName), e);
             return ResponseUtils.plainResponse(
                     String.format("Failed to get the file"),
                     Response.Status.NOT_FOUND
             );
         } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Cannot encode data: ", e);
+            logger.error("Cannot encode data: ", e);
             return Response.serverError().build();
         }
     }
@@ -99,12 +99,12 @@ public class StateQueries {
      */
     public static Response putFile(
             StateStore stateStore, InputStream uploadedInputStream, FormDataContentDisposition fileDetails) {
-        LOGGER.info(fileDetails.toString());
+        logger.info(fileDetails.toString());
         String fileName = fileDetails.getFileName();
         if (fileName == null) {
             return ResponseUtils.plainResponse(NO_FILENAME_ERROR_MESSAGE, Response.Status.BAD_REQUEST);
         }
-        LOGGER.info("Storing {}", fileName);
+        logger.info("Storing {}", fileName);
 
         try {
             byte[] data = RequestUtils.readData(uploadedInputStream, fileDetails, FILE_SIZE_LIMIT);
@@ -114,7 +114,7 @@ public class StateQueries {
             // Size limit exceeded or other user input error
             return ResponseUtils.plainResponse(e.getMessage(), Response.Status.BAD_REQUEST);
         } catch (StateStoreException | IOException e) {
-            LOGGER.error(String.format("Failed to store file %s", fileName), e);
+            logger.error(String.format("Failed to store file %s", fileName), e);
             return Response.serverError().build();
         }
     }
@@ -126,7 +126,7 @@ public class StateQueries {
         try {
             return ResponseUtils.jsonOkResponse(new JSONObject(getTasksZones(stateStore)));
         } catch (StateStoreException ex) {
-            LOGGER.error("Failed to fetch the zone information for the service's tasks: ", ex);
+            logger.error("Failed to fetch the zone information for the service's tasks: ", ex);
             return Response.serverError().build();
         }
     }
@@ -140,11 +140,11 @@ public class StateQueries {
             if (tasksZones.containsKey(taskName)) {
                 return ResponseUtils.plainOkResponse(tasksZones.get(taskName));
             } else {
-                LOGGER.error("No zone exists for the specified task");
+                logger.error("No zone exists for the specified task");
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (StateStoreException ex) {
-            LOGGER.error("Failed to fetch the zone information for the service's task: ", ex);
+            logger.error("Failed to fetch the zone information for the service's task: ", ex);
             return Response.serverError().build();
         }
     }
@@ -156,12 +156,12 @@ public class StateQueries {
         try {
             String zone = getZoneFromTaskNameAndIP(stateStore, podType, ip);
             if (zone.isEmpty()) {
-                LOGGER.error("Failed to find a zone for pod type = {}, ip address = {}", podType, ip);
+                logger.error("Failed to find a zone for pod type = {}, ip address = {}", podType, ip);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             return ResponseUtils.plainOkResponse(zone);
         } catch (StateStoreException ex) {
-            LOGGER.error("Failed to fetch the zone information for the service's task: ", ex);
+            logger.error("Failed to fetch the zone information for the service's task: ", ex);
             return Response.serverError().build();
         }
     }
@@ -174,7 +174,7 @@ public class StateQueries {
             JSONArray keyArray = new JSONArray(stateStore.fetchPropertyKeys());
             return ResponseUtils.jsonOkResponse(keyArray);
         } catch (StateStoreException ex) {
-            LOGGER.error("Failed to fetch list of property keys", ex);
+            logger.error("Failed to fetch list of property keys", ex);
             return Response.serverError().build();
         }
     }
@@ -185,15 +185,15 @@ public class StateQueries {
      */
     public static Response getProperty(StateStore stateStore, PropertyDeserializer propertyDeserializer, String key) {
         try {
-            LOGGER.info("Attempting to fetch property '{}'", key);
+            logger.info("Attempting to fetch property '{}'", key);
             return ResponseUtils.jsonResponseBean(
                     propertyDeserializer.toJsonString(key, stateStore.fetchProperty(key)), Response.Status.OK);
         } catch (StateStoreException ex) {
             if (ex.getReason() == Reason.NOT_FOUND) {
-                LOGGER.warn(String.format("Requested property '%s' wasn't found", key), ex);
+                logger.warn(String.format("Requested property '%s' wasn't found", key), ex);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            LOGGER.error(String.format("Failed to fetch requested property '%s'", key), ex);
+            logger.error(String.format("Failed to fetch requested property '%s'", key), ex);
             return Response.serverError().build();
         }
     }
@@ -205,22 +205,22 @@ public class StateQueries {
     public static Response refreshCache(StateStore stateStore) {
         PersisterCache cache = getPersisterCache(stateStore);
         if (cache == null) {
-            LOGGER.warn("State store is not cached: Refresh is not applicable");
+            logger.warn("State store is not cached: Refresh is not applicable");
             return Response.status(Response.Status.CONFLICT).build();
         }
         try {
-            LOGGER.info("Refreshing state store cache...");
-            LOGGER.info("Before:\n- tasks: {}\n- properties: {}",
+            logger.info("Refreshing state store cache...");
+            logger.info("Before:\n- tasks: {}\n- properties: {}",
                     stateStore.fetchTaskNames(), stateStore.fetchPropertyKeys());
 
             cache.refresh();
 
-            LOGGER.info("After:\n- tasks: {}\n- properties: {}",
+            logger.info("After:\n- tasks: {}\n- properties: {}",
                     stateStore.fetchTaskNames(), stateStore.fetchPropertyKeys());
 
             return ResponseUtils.jsonOkResponse(getCommandResult("refresh"));
         } catch (PersisterException ex) {
-            LOGGER.error("Failed to refresh state cache", ex);
+            logger.error("Failed to refresh state cache", ex);
             return Response.serverError().build();
         }
     }

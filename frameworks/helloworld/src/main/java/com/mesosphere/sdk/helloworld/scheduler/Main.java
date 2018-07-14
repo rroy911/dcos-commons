@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public class Main {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private static final String HELLO_COUNT_ENV_KEY = "HELLO_COUNT";
     private static final String HELLO_CPUS_ENV_KEY = "HELLO_CPUS";
@@ -45,10 +45,10 @@ public class Main {
         final SchedulerConfig schedulerConfig = SchedulerConfig.fromEnvStore(envStore);
 
         final Collection<Scenario.Type> scenarios = Scenario.getScenarios(envStore);
-        LOGGER.info("Using scenarios: {}", scenarios);
+        logger.info("Using scenarios: {}", scenarios);
         if (scenarios.contains(Scenario.Type.JAVA)) {
             // Create a sample spec in Java, ignore any yaml file args
-            LOGGER.info("Starting Java-defined scheduler");
+            logger.info("Starting Java-defined scheduler");
             runJavaDefinedService(schedulerConfig, envStore, scenarios);
             return;
         }
@@ -56,15 +56,15 @@ public class Main {
         Collection<File> yamlFiles = getYamlFiles(args);
         if (yamlFiles.size() == 1) {
             // One YAML file: Mono-Scheduler
-            LOGGER.info("Starting mono-scheduler using: {}", yamlFiles.iterator().next());
+            logger.info("Starting mono-scheduler using: {}", yamlFiles.iterator().next());
             runSingleYamlService(schedulerConfig, yamlFiles.iterator().next(), scenarios);
         } else if (yamlFiles.isEmpty()) {
             // No YAML files (and not in JAVA scenario): Dynamic Multi-Scheduler (user adds/removes services)
-            LOGGER.info("Starting dynamic multi-scheduler");
+            logger.info("Starting dynamic multi-scheduler");
             runDynamicMultiService(schedulerConfig, envStore, scenarios);
         } else {
             // Multiple YAML files: Static Multi-Scheduler (one service per provided yaml file)
-            LOGGER.info("Starting static multi-scheduler using: {}", yamlFiles);
+            logger.info("Starting static multi-scheduler using: {}", yamlFiles);
             runFixedMultiYamlService(schedulerConfig, envStore, yamlFiles, scenarios);
         }
     }
@@ -166,7 +166,7 @@ public class Main {
             public void uninstalled(String name) {
                 // Should only happen when the entire framework is being uninstalled, as we do not expose a way to
                 // remove added services here.
-                LOGGER.info("Service has completed uninstall: {}", name);
+                logger.info("Service has completed uninstall: {}", name);
             }
         });
 
@@ -196,7 +196,7 @@ public class Main {
         for (int i = 0; i < args.length; ++i) {
             yamlPaths.addAll(Splitter.on(',').trimResults().splitToList(args[i]));
         }
-        LOGGER.info("Using YAML examples: {}", yamlPaths);
+        logger.info("Using YAML examples: {}", yamlPaths);
         return yamlPaths.stream()
                 .map(name -> ExampleMultiServiceResource.getYamlFile(name))
                 .collect(Collectors.toList());

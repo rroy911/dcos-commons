@@ -11,7 +11,7 @@ import java.io.IOException;
  * This class represents a set of capabilities that may or may not be supported in a given version of DC/OS.
  */
 public class Capabilities {
-    private static final Logger LOGGER = LoggingUtils.getLogger(Capabilities.class);
+    private static final Logger logger = LoggingUtils.getLogger(Capabilities.class);
     private static final Object lock = new Object();
     private static Capabilities capabilities;
 
@@ -24,7 +24,7 @@ public class Capabilities {
                     DcosVersionClient client = new DcosVersionClient(new DcosHttpExecutor(new DcosHttpClientBuilder()));
                     capabilities = new Capabilities(client.getDcosVersion());
                 } catch (IOException e) {
-                    LOGGER.error("Unable to fetch DC/OS version.", e);
+                    logger.error("Unable to fetch DC/OS version.", e);
                     throw new IllegalStateException(e);
                 }
             }
@@ -115,7 +115,7 @@ public class Capabilities {
             return false;
         } catch (NumberFormatException ex) {
             // incorrect version string.
-            LOGGER.error("Unable to parse DC/OS version string: {}", dcosVersion.getVersion());
+            logger.error("Unable to parse DC/OS version string: {}", dcosVersion.getVersion());
             throw new IllegalStateException(ex);
         }
     }

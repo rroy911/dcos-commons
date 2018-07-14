@@ -21,7 +21,7 @@ import java.util.Optional;
  */
 abstract class AbstractRoundRobinRule implements PlacementRule {
 
-    private static final Logger LOGGER = LoggingUtils.getLogger(AbstractRoundRobinRule.class);
+    private static final Logger logger = LoggingUtils.getLogger(AbstractRoundRobinRule.class);
 
     protected final StringMatcher taskFilter;
     protected final Optional<Integer> distinctKeyCount;
@@ -95,7 +95,7 @@ abstract class AbstractRoundRobinRule implements PlacementRule {
         if (offerKeyCount == null) {
             offerKeyCount = 0;
         }
-        LOGGER.info("Key counts: {}, knownMin: {}, knownMax: {}, offer: {}",
+        logger.info("Key counts: {}, knownMin: {}, knownMax: {}, offer: {}",
                 counts, minKnownKeyCount, maxKnownKeyCount, offerKeyCount);
 
         if (minKnownKeyCount == maxKnownKeyCount

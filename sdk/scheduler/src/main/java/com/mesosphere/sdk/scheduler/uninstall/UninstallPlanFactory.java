@@ -42,7 +42,7 @@ import com.mesosphere.sdk.state.StateStore;
  * Handles creation of the uninstall plan, returning information about the plan contents back to the caller.
  */
 public class UninstallPlanFactory {
-    private static final Logger LOGGER = LoggingUtils.getLogger(UninstallPlanFactory.class);
+    private static final Logger logger = LoggingUtils.getLogger(UninstallPlanFactory.class);
 
     private static final String TASK_KILL_PHASE = "kill-tasks";
     private static final String RESOURCE_PHASE_PREFIX = "unreserve-resources-";
@@ -95,7 +95,7 @@ public class UninstallPlanFactory {
                     Collections.emptyList()));
         }
 
-        LOGGER.info("{}/{} resources remain to be unreserved",
+        logger.info("{}/{} resources remain to be unreserved",
                 allResourceCleanupSteps.stream().filter(step -> !step.isComplete()).count(),
                 allResourceCleanupSteps.size());
 
@@ -122,7 +122,7 @@ public class UninstallPlanFactory {
                         new SerialStrategy<>(),
                         Collections.emptyList()));
             } catch (Exception e) {
-                LOGGER.error("Failed to create a secrets store client, " +
+                logger.error("Failed to create a secrets store client, " +
                         "TLS artifacts possibly won't be cleaned up from secrets store", e);
             }
         }
@@ -208,7 +208,7 @@ public class UninstallPlanFactory {
             try {
                 hostname = new TaskLabelReader(taskInfo).getHostname();
             } catch (TaskException e) {
-                LOGGER.warn(String.format("Failed to determine hostname of task %s", taskInfo.getName()), e);
+                logger.warn(String.format("Failed to determine hostname of task %s", taskInfo.getName()), e);
                 hostname = "UNKNOWN_AGENT";
             }
 
@@ -222,7 +222,7 @@ public class UninstallPlanFactory {
             agentResourceIds.addAll(ResourceUtils.getResourceIds(ResourceUtils.getAllResources(taskInfo)));
         }
 
-        LOGGER.info("Configuring resource cleanup of {}/{} tasks across {} agents",
+        logger.info("Configuring resource cleanup of {}/{} tasks across {} agents",
                 tasksWithExpectedReservations.size(), allTasks.size(), resourceIdsByAgentHost.size());
         return resourceIdsByAgentHost;
     }

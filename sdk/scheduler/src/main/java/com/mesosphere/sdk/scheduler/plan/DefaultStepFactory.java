@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * This class is a default implementation of the {@link StepFactory} interface.
  */
 public class DefaultStepFactory implements StepFactory {
-    private static final Logger LOGGER = LoggingUtils.getLogger(DefaultStepFactory.class);
+    private static final Logger logger = LoggingUtils.getLogger(DefaultStepFactory.class);
 
     private final ConfigTargetStore configTargetStore;
     private final StateStore stateStore;
@@ -41,7 +41,7 @@ public class DefaultStepFactory implements StepFactory {
     @Override
     public Step getStep(PodInstance podInstance, Collection<String> tasksToLaunch) {
         try {
-            LOGGER.info("Generating step for pod: {}, with tasks: {}", podInstance.getName(), tasksToLaunch);
+            logger.info("Generating step for pod: {}, with tasks: {}", podInstance.getName(), tasksToLaunch);
             validate(podInstance, tasksToLaunch);
 
             List<Protos.TaskInfo> taskInfos = TaskUtils.getTaskNames(podInstance, tasksToLaunch).stream()
@@ -57,7 +57,7 @@ public class DefaultStepFactory implements StepFactory {
                     namespace)
                     .updateInitialStatus(taskInfos.isEmpty() ? Status.PENDING : getStatus(podInstance, taskInfos));
         } catch (Exception e) {
-            LOGGER.error("Failed to generate Step with exception: ", e);
+            logger.error("Failed to generate Step with exception: ", e);
             return new DeploymentStep(
                     podInstance.getName(),
                     PodInstanceRequirement.newBuilder(podInstance, Collections.emptyList()).build(),
@@ -128,7 +128,7 @@ public class DefaultStepFactory implements StepFactory {
 
         boolean isOnTarget;
         if (hasReachedGoal && (goalState.equals(GoalState.FINISHED) || goalState.equals(GoalState.ONCE))) {
-            LOGGER.info("Automatically on target configuration due to having reached {} goal.", goalState);
+            logger.info("Automatically on target configuration due to having reached {} goal.", goalState);
             isOnTarget = true;
         } else {
             isOnTarget = isOnTarget(taskInfo, targetConfigId);
@@ -139,10 +139,10 @@ public class DefaultStepFactory implements StepFactory {
         String bitsLog = String.format("onTarget=%s reachedGoal=%s permanentlyFailed=%s",
                 isOnTarget, hasReachedGoal, hasPermanentlyFailed);
         if ((isOnTarget && hasReachedGoal) || hasPermanentlyFailed) {
-            LOGGER.info("Deployment of task '{}' is COMPLETE: {}", taskInfo.getName(), bitsLog);
+            logger.info("Deployment of task '{}' is COMPLETE: {}", taskInfo.getName(), bitsLog);
             return Status.COMPLETE;
         } else {
-            LOGGER.info("Deployment of task '{}' is PENDING: {}", taskInfo.getName(), bitsLog);
+            logger.info("Deployment of task '{}' is PENDING: {}", taskInfo.getName(), bitsLog);
             return Status.PENDING;
         }
 
